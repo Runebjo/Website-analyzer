@@ -45,8 +45,6 @@ function App() {
 						const post = axios.get(`${url}?per_page=10&page=${page}`);
 						posts.push(post);
 					}
-
-					console.log('posts', posts);
 					axios
 						.all(posts)
 						.then(res => {
@@ -77,37 +75,45 @@ function App() {
 	}, [url]);
 
 	return (
-		<div>
+		<div className='container mx-auto'>
 			<form onSubmit={submitUrl}>
 				<input
 					type='text'
 					name='url'
+					placeholder='Enter website url...'
 					onChange={e => setUrlInput(e.target.value)}
-					style={{ width: '80%' }}
+					className='bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-1 px-4 mt-4 w-64 appearance-none leading-normal'
 				/>
-				<button>Search</button>
+				<button className='ml-1 border py-1 px-4 rounded-lg focus:outline-none focus:shadow-outline'>
+					Search
+				</button>
 			</form>
 			{isLoadingHeaders ? (
 				<h3>Loading...</h3>
 			) : (
-				<>
+				<div className='mt-4'>
 					<h3>Website: {website}</h3>
 					<p>
 						Number of posts:{' '}
 						{response && parseInt(response.headers['x-wp-total'])}
 					</p>
-				</>
+				</div>
 			)}
 			{!isLoadingHeaders && posts.length > 0 ? (
-				<ul>
+				<ul className='mt-4'>
 					{posts.map(post => (
 						<li key={post.id}>
 							{post.createdDate} {' - '}
-							<a href={post.link} target='_blank' rel='noopener noreferrer'>
+							<a
+								className='text-blue-600 hover:text-blue-300'
+								href={post.link}
+								target='_blank'
+								rel='noopener noreferrer'>
 								{post.title}
 							</a>
 							{' - '}
 							<a
+								className='text-blue-600 hover:text-blue-300'
 								href={`https://www.google.com/search?q=${post.title}`}
 								target='_blank'
 								rel='noopener noreferrer'>
