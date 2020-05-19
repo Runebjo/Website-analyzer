@@ -28,6 +28,7 @@ function App() {
 		str = str.replace(/(^\s*)|(\s*$)/gi, '');
 		str = str.replace(/[ ]{2,}/gi, ' ');
 		str = str.replace(/\n /, '\n');
+		str = str.replace(/<[^>]*>?/gm, '');
 		return str.split(' ').length;
 	}
 
@@ -37,10 +38,8 @@ function App() {
 			.get(url)
 			.then(response => {
 				setResponse(response);
-				console.log('response', response);
 				setIsLoadingHeaders(false);
 				function getPosts(totalPages) {
-					console.log('totalPages', totalPages);
 					const posts = [];
 					for (let page = 1; page <= totalPages; page++) {
 						const post = axios.get(`${url}?per_page=10&page=${page}`);
@@ -59,11 +58,11 @@ function App() {
 									createdDate: p.date.substr(0, 10),
 									title: decodeHtml(p.title.rendered),
 									numberOfWords: countWords(p.content.rendered),
+									link: p.link,
 								};
 							});
 
 							console.log('processedPost', processedPost);
-							//console.log('postpost', countWords(postpost[0].content.rendered));
 							setPosts(processedPost);
 						})
 						.catch(error => {
@@ -103,7 +102,18 @@ function App() {
 				<ul>
 					{posts.map(post => (
 						<li key={post.id}>
-							{post.createdDate} - {post.title} - {post.numberOfWords}
+							{post.createdDate} {' - '}
+							<a href={post.link} target='_blank' rel='noopener noreferrer'>
+								{post.title}
+							</a>
+							{' - '}
+							<a
+								href={`https://www.google.com/search?q=${post.title}`}
+								target='_blank'
+								rel='noopener noreferrer'>
+								Google Search
+							</a>
+							- {post.numberOfWords}
 						</li>
 					))}
 				</ul>
