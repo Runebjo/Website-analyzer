@@ -54,6 +54,7 @@ function App() {
 								return {
 									id: p.id,
 									createdDate: p.date.substr(0, 10),
+									modifiedDate: p.modified.substr(0, 10),
 									title: decodeHtml(p.title.rendered),
 									numberOfWords: countWords(p.content.rendered),
 									link: p.link,
@@ -100,29 +101,46 @@ function App() {
 				</div>
 			)}
 			{!isLoadingHeaders && posts.length > 0 ? (
-				<ul className='mt-4'>
-					{posts.map(post => (
-						<li key={post.id}>
-							{post.createdDate} {' - '}
-							<a
-								className='text-blue-600 hover:text-blue-300'
-								href={post.link}
-								target='_blank'
-								rel='noopener noreferrer'>
-								{post.title}
-							</a>
-							{' - '}
-							<a
-								className='text-blue-600 hover:text-blue-300'
-								href={`https://www.google.com/search?q=${post.title}`}
-								target='_blank'
-								rel='noopener noreferrer'>
-								Google Search
-							</a>
-							- {post.numberOfWords}
-						</li>
-					))}
-				</ul>
+				<table className='mt-4 table-auto w-full'>
+					<thead>
+						<tr>
+							<th className='px-4 py-2 bg-gray-300 text-left'>Post Created</th>
+							<th className='px-4 py-2 bg-gray-300 text-left'>Post Modified</th>
+							<th className='px-4 py-2 bg-gray-300 text-left'>Title</th>
+							<th className='px-4 py-2 bg-gray-300 text-left'>Google Search</th>
+							<th className='px-4 py-2 bg-gray-300 text-left'>Word Count</th>
+						</tr>
+					</thead>
+					<tbody>
+						{posts.map((post, index) => (
+							<tr
+								key={post.id}
+								className={`${index % 2 !== 0 ? 'bg-gray-200' : ''}`}>
+								<td className='border px-4 py-2'>{post.createdDate}</td>
+								<td className='border px-4 py-2'>{post.modifiedDate}</td>
+								<td className='border px-4 py-2'>
+									<a
+										className='text-blue-600 hover:text-blue-300'
+										href={post.link}
+										target='_blank'
+										rel='noopener noreferrer'>
+										{post.title}
+									</a>
+								</td>
+								<td className='border px-4 py-2'>
+									<a
+										className='text-blue-600 hover:text-blue-300'
+										href={`https://www.google.com/search?q=${post.title}`}
+										target='_blank'
+										rel='noopener noreferrer'>
+										Google Search
+									</a>
+								</td>
+								<td className='border px-4 py-2'>{post.numberOfWords}</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
 			) : (
 				<h5>Loading posts...</h5>
 			)}
