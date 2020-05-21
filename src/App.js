@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { PostTable } from './components/PostTable';
 
 function App() {
 	const [urlInput, setUrlInput] = useState('');
@@ -60,8 +61,6 @@ function App() {
 									link: p.link,
 								};
 							});
-
-							console.log('processedPost', processedPost);
 							setPosts(processedPost);
 						})
 						.catch(error => {
@@ -101,46 +100,7 @@ function App() {
 				</div>
 			)}
 			{!isLoadingHeaders && posts.length > 0 ? (
-				<table className='mt-4 table-auto w-full'>
-					<thead>
-						<tr>
-							<th className='px-4 py-2 bg-gray-300 text-left'>Post Created</th>
-							<th className='px-4 py-2 bg-gray-300 text-left'>Post Modified</th>
-							<th className='px-4 py-2 bg-gray-300 text-left'>Title</th>
-							<th className='px-4 py-2 bg-gray-300 text-left'>Google Search</th>
-							<th className='px-4 py-2 bg-gray-300 text-left'>Word Count</th>
-						</tr>
-					</thead>
-					<tbody>
-						{posts.map((post, index) => (
-							<tr
-								key={post.id}
-								className={`${index % 2 !== 0 ? 'bg-gray-200' : ''}`}>
-								<td className='border px-4 py-2'>{post.createdDate}</td>
-								<td className='border px-4 py-2'>{post.modifiedDate}</td>
-								<td className='border px-4 py-2'>
-									<a
-										className='text-blue-600 hover:text-blue-300'
-										href={post.link}
-										target='_blank'
-										rel='noopener noreferrer'>
-										{post.title}
-									</a>
-								</td>
-								<td className='border px-4 py-2'>
-									<a
-										className='text-blue-600 hover:text-blue-300'
-										href={`https://www.google.com/search?q=${post.title}`}
-										target='_blank'
-										rel='noopener noreferrer'>
-										Google Search
-									</a>
-								</td>
-								<td className='border px-4 py-2'>{post.numberOfWords}</td>
-							</tr>
-						))}
-					</tbody>
-				</table>
+				<PostTable posts={posts} />
 			) : (
 				<h5>Loading posts...</h5>
 			)}
