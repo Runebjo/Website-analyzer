@@ -95,7 +95,7 @@ export const Stats = ({ posts }) => {
 			<tbody>
 				{orderedPosts.map((post, index) => (
 					<tr
-						key={post.id}
+						key={post.key}
 						className={`${index % 2 !== 0 ? 'bg-gray-200' : ''}`}>
 						<td className='px-4 py-2 border'>
 							{post.year} - {post.month}
