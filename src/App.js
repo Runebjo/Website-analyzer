@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { PostTable } from './components/PostTable';
+import { Stats } from './components/Stats';
 
 function App() {
 	const [urlInput, setUrlInput] = useState('');
@@ -51,6 +52,7 @@ function App() {
 						.then(res => {
 							const mappedPosts = res.map(r => r.data);
 							const postpost = mappedPosts.flat();
+
 							const processedPost = postpost.map(p => {
 								return {
 									id: p.id,
@@ -61,6 +63,7 @@ function App() {
 									link: p.link,
 								};
 							});
+
 							setPosts(processedPost);
 						})
 						.catch(error => {
@@ -82,9 +85,9 @@ function App() {
 					name='url'
 					placeholder='Enter website url...'
 					onChange={e => setUrlInput(e.target.value)}
-					className='bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-1 px-4 mt-4 w-64 appearance-none leading-normal'
+					className='w-64 px-4 py-1 mt-4 leading-normal bg-white border border-gray-300 rounded-lg appearance-none focus:outline-none focus:shadow-outline'
 				/>
-				<button className='ml-1 border py-1 px-4 rounded-lg focus:outline-none focus:shadow-outline'>
+				<button className='px-4 py-1 ml-1 border rounded-lg focus:outline-none focus:shadow-outline'>
 					Search
 				</button>
 			</form>
@@ -98,6 +101,11 @@ function App() {
 						{response && parseInt(response.headers['x-wp-total'])}
 					</p>
 				</div>
+			)}
+			{!isLoadingHeaders && posts.length > 0 ? (
+				<Stats posts={posts} />
+			) : (
+				<h5>Loading stats...</h5>
 			)}
 			{!isLoadingHeaders && posts.length > 0 ? (
 				<PostTable posts={posts} />
