@@ -10,11 +10,15 @@ function App() {
 	const [website, setWebsite] = useState('');
 	const [isLoadingHeaders, setIsLoadingHeaders] = useState(false);
 	const [posts, setPosts] = useState([]);
+	const [isHttpError, setIsHttpError] = useState(false);
 
 	function submitUrl(e) {
 		e.preventDefault();
 		setWebsite(urlInput);
 		setPosts([]);
+
+		// TODO: handle urlInput
+
 		setUrl(`https://${urlInput}/wp-json/wp/v2/posts`);
 	}
 
@@ -66,12 +70,15 @@ function App() {
 								setPosts(processedPost);
 							})
 							.catch(error => {
+								setIsHttpError(true);
 								console.log(`Error getting posts: ${error}`);
 							});
 					}
 					getPosts(response.headers['x-wp-totalpages']);
 				})
 				.catch(error => {
+					console.log('error', error);
+					setIsHttpError(true);
 					setIsLoadingHeaders(false);
 				});
 		}
@@ -91,7 +98,10 @@ function App() {
 					Search
 				</button>
 			</form>
-			{website && !isLoadingHeaders && (
+
+			{isHttpError && <h3>Error getting data from website</h3>}
+
+			{website && !isLoadingHeaders && !isHttpError && (
 				<div className='mt-4'>
 					<h3>Website: {website}</h3>
 					<p>
@@ -100,13 +110,13 @@ function App() {
 					</p>
 				</div>
 			)}
-			{website && !isLoadingHeaders && posts.length > 0 ? (
+			{website && !isLoadingHeaders && !isHttpError && posts.length > 0 ? (
 				<>
 					<Stats posts={posts} />
 					<PostTable posts={posts} />
 				</>
 			) : (
-				website && <h5>Loading posts...</h5>
+				website && !isHttpError && <h5>Loading posts...</h5>
 			)}
 		</div>
 	);
