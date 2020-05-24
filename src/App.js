@@ -17,9 +17,10 @@ function App() {
 		setWebsite(urlInput);
 		setPosts([]);
 
-		// TODO: handle urlInput
-
-		setUrl(`https://${urlInput}/wp-json/wp/v2/posts`);
+		const blogUrl = urlInput.startsWith('https://')
+			? urlInput
+			: `https://${urlInput}`;
+		setUrl(`${blogUrl}/wp-json/wp/v2/posts`);
 	}
 
 	function decodeHtml(html) {
@@ -42,6 +43,7 @@ function App() {
 			axios
 				.get(url)
 				.then(response => {
+					console.log(response);
 					setResponse(response);
 					setIsLoadingHeaders(false);
 					function getPosts(totalPages) {
