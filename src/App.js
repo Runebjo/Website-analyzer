@@ -23,7 +23,6 @@ function App() {
 				? urlInput
 				: `https://${urlInput}`;
 
-		console.log('blogUrl', blogUrl);
 		setUrl(`${blogUrl}/wp-json/wp/v2/posts`);
 	}
 
@@ -47,7 +46,6 @@ function App() {
 			axios
 				.get(url)
 				.then(response => {
-					console.log(response);
 					setResponse(response);
 					setIsLoadingHeaders(false);
 					function getPosts(totalPages) {
@@ -96,8 +94,10 @@ function App() {
 				<input
 					type='text'
 					name='url'
+					value={urlInput}
 					placeholder='Enter website url...'
 					onChange={e => setUrlInput(e.target.value)}
+					onFocus={e => setUrlInput('')}
 					className='w-64 px-4 py-1 mt-4 leading-normal bg-white border border-gray-300 rounded-lg appearance-none focus:outline-none focus:shadow-outline'
 				/>
 				<button className='px-4 py-1 ml-1 border rounded-lg focus:outline-none focus:shadow-outline'>
