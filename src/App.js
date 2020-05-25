@@ -15,6 +15,7 @@ function App() {
 	function submitUrl(e) {
 		e.preventDefault();
 		setWebsite(urlInput);
+		setIsHttpError(false);
 		setPosts([]);
 
 		const blogUrl =
@@ -90,7 +91,7 @@ function App() {
 	}, [url, website]);
 
 	return (
-		<div className='container mx-auto'>
+		<div className='container mx-auto mb-8'>
 			<form onSubmit={submitUrl}>
 				<input
 					type='text'
