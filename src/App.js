@@ -17,9 +17,12 @@ function App() {
 		setWebsite(urlInput);
 		setPosts([]);
 
-		const blogUrl = urlInput.startsWith('https://')
-			? urlInput
-			: `https://${urlInput}`;
+		const blogUrl =
+			urlInput.startsWith('https://') || urlInput.startsWith('http://')
+				? urlInput
+				: `https://${urlInput}`;
+
+		console.log('blogUrl', blogUrl);
 		setUrl(`${blogUrl}/wp-json/wp/v2/posts`);
 	}
 
