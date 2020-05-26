@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { PostTable } from './components/PostTable';
 import { Stats } from './components/Stats';
+import { Overview } from './components/Overview';
 
 function App() {
 	const [urlInput, setUrlInput] = useState('');
@@ -118,6 +119,7 @@ function App() {
 			)}
 			{website && !isLoadingHeaders && !isHttpError && posts.length > 0 ? (
 				<>
+					<Overview posts={posts} />
 					<Stats posts={posts} />
 					<PostTable posts={posts} />
 				</>
