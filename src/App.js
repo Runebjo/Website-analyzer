@@ -3,6 +3,7 @@ import axios from 'axios';
 import { PostTable } from './components/PostTable';
 import { Stats } from './components/Stats';
 import { Overview } from './components/Overview';
+import { Categories } from './components/Categories';
 
 function App() {
 	const [urlInput, setUrlInput] = useState('');
@@ -12,6 +13,7 @@ function App() {
 	const [isLoadingHeaders, setIsLoadingHeaders] = useState(false);
 	const [posts, setPosts] = useState([]);
 	const [isHttpError, setIsHttpError] = useState(false);
+	const [siteUrl, setSiteUrl] = useState('');
 
 	function submitUrl(e) {
 		e.preventDefault();
@@ -25,6 +27,7 @@ function App() {
 				: `https://${urlInput}`;
 
 		setUrl(`${blogUrl}/wp-json/wp/v2/posts`);
+		setSiteUrl(blogUrl);
 	}
 
 	function decodeHtml(html) {
@@ -48,6 +51,7 @@ function App() {
 				.get(url)
 				.then(response => {
 					setResponse(response);
+					console.log('response', response);
 					setIsLoadingHeaders(false);
 					function getPosts(totalPages) {
 						const posts = [];
@@ -120,7 +124,10 @@ function App() {
 			{website && !isLoadingHeaders && !isHttpError && posts.length > 0 ? (
 				<>
 					<Overview posts={posts} />
-					<Stats posts={posts} />
+					<div className='flex'>
+						<Categories siteUrl={siteUrl} />
+						<Stats posts={posts} />
+					</div>
 					<PostTable posts={posts} />
 				</>
 			) : (

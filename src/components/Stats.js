@@ -75,7 +75,7 @@ export const Stats = ({ posts }) => {
 	}
 
 	return (
-		<table className='mt-4 table-auto'>
+		<table className='mt-4 ml-4 table-auto'>
 			<thead>
 				<tr>
 					<SortableHeader
