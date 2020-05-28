@@ -14,6 +14,7 @@ function App() {
 	const [isLoadingHeaders, setIsLoadingHeaders] = useState(false);
 	const [isHttpError, setIsHttpError] = useState(false);
 	const [siteUrl, setSiteUrl] = useState('');
+	const [overviewIsActive, setOverviewIsActive] = useState(true);
 
 	function submitUrl(e) {
 		e.preventDefault();
@@ -122,14 +123,34 @@ function App() {
 			{isHttpError && <h3>Error getting data from website</h3>}
 
 			{!isLoadingHeaders && !isHttpError && posts.length > 0 ? (
-				<div className='mt-4'>
-					<div className='flex'>
-						<Overview posts={posts} headers={headers} />
-						<Categories categories={categories} />
-						<Stats posts={posts} />
+				<>
+					<div className='mt-8'>
+						<button
+							onClick={() => setOverviewIsActive(true)}
+							className={`text-blue-600 visited:text-blue-800 hover:text-blue-300 focus:outline-none ${
+								overviewIsActive ? 'underline' : ''
+							}`}>
+							Overview
+						</button>
+						<button
+							onClick={() => setOverviewIsActive(false)}
+							className={`ml-4 text-blue-600 visited:text-blue-800 hover:text-blue-300 focus:outline-none ${
+								!overviewIsActive ? 'underline' : ''
+							}`}>
+							Posts
+						</button>
 					</div>
-					<PostTable posts={posts} />
-				</div>
+					<div className='mt-4'>
+						{overviewIsActive && (
+							<div className='flex'>
+								<Overview posts={posts} headers={headers} />
+								<Categories categories={categories} />
+								<Stats posts={posts} />
+							</div>
+						)}
+						{!overviewIsActive && <PostTable posts={posts} />}
+					</div>
+				</>
 			) : (
 				siteUrl && !isHttpError && <h5>Loading posts...</h5>
 			)}
