@@ -28,12 +28,9 @@ export const PostTable = ({ posts }) => {
 
 	function filterPosts({ target }) {
 		const inputValue = target.value;
-		console.log(inputValue);
-		console.log('orderedPosts', orderedPosts);
 		const filteredOrderedPosts = orderedPosts.filter(o =>
 			o.title.toUpperCase().includes(inputValue.toUpperCase())
 		);
-		console.log('filteredOrderedPosts', filteredOrderedPosts);
 		setFilteredPosts(filteredOrderedPosts);
 	}
 
