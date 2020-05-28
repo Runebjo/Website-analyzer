@@ -6,12 +6,13 @@ import { Overview } from './components/Overview';
 import { Categories } from './components/Categories';
 
 function App() {
+	const [posts, setPosts] = useState([]);
+	const [categories, setCategories] = useState([]);
+	const [headers, setHeaders] = useState({});
 	const [urlInput, setUrlInput] = useState('');
 	const [url, setUrl] = useState('');
-	const [response, setResponse] = useState(null);
 	const [website, setWebsite] = useState('');
 	const [isLoadingHeaders, setIsLoadingHeaders] = useState(false);
-	const [posts, setPosts] = useState([]);
 	const [isHttpError, setIsHttpError] = useState(false);
 	const [siteUrl, setSiteUrl] = useState('');
 
@@ -45,53 +46,63 @@ function App() {
 	}
 
 	useEffect(() => {
-		if (website) {
-			setIsLoadingHeaders(true);
-			axios
-				.get(url)
-				.then(response => {
-					setResponse(response);
-					console.log('response', response);
-					setIsLoadingHeaders(false);
-					function getPosts(totalPages) {
-						const posts = [];
-						for (let page = 1; page <= totalPages; page++) {
-							const post = axios.get(`${url}?per_page=10&page=${page}`);
-							posts.push(post);
-						}
-						axios
-							.all(posts)
-							.then(res => {
-								const mappedPosts = res.map(r => r.data);
-								const postpost = mappedPosts.flat();
-
-								const processedPost = postpost.map(p => {
-									return {
-										id: p.id,
-										createdDate: p.date.substr(0, 10),
-										modifiedDate: p.modified.substr(0, 10),
-										title: decodeHtml(p.title.rendered),
-										numberOfWords: countWords(p.content.rendered),
-										link: p.link,
-									};
-								});
-
-								setPosts(processedPost);
-							})
-							.catch(error => {
-								setIsHttpError(true);
-								console.log(`Error getting posts: ${error}`);
-							});
-					}
-					getPosts(response.headers['x-wp-totalpages']);
-				})
-				.catch(error => {
-					console.log('error', error);
-					setIsHttpError(true);
-					setIsLoadingHeaders(false);
-				});
+		async function getHeaderData() {
+			const response = await axios.get(url);
+			const headers = {
+				totalPages: response.headers['x-wp-totalpages'],
+				totalPosts: response.headers['x-wp-total'],
+				baseAddress: siteUrl,
+			};
+			setHeaders(headers);
+			return headers;
 		}
-	}, [url, website]);
+		async function getAllPosts(totalPages) {
+			const posts = [];
+			for (let page = 1; page <= totalPages; page++) {
+				const post = axios.get(`${url}?per_page=10&page=${page}`);
+				posts.push(post);
+			}
+			const allPosts = await axios.all(posts);
+			return allPosts;
+		}
+		async function getCategories() {
+			const response = await axios.get(
+				`${siteUrl}/wp-json/wp/v2/categories?per_page=100`
+			);
+			const categories = response.data;
+			return categories;
+		}
+		async function addData() {
+			setIsLoadingHeaders(true);
+			const headerData = await getHeaderData();
+			const allPosts = await getAllPosts(headerData.totalPages);
+			const categories = await getCategories();
+			const postFlattened = allPosts.map(a => a.data).flat();
+			const processedPost = postFlattened.map(p => {
+				return {
+					id: p.id,
+					createdDate: p.date.substr(0, 10),
+					modifiedDate: p.modified.substr(0, 10),
+					title: decodeHtml(p.title.rendered),
+					numberOfWords: countWords(p.content.rendered),
+					link: p.link,
+					categories: p.categories,
+				};
+			});
+			setPosts(processedPost);
+			setCategories(categories);
+		}
+		if (website) {
+			try {
+				setIsLoadingHeaders(true);
+				addData();
+				setIsLoadingHeaders(false);
+			} catch (error) {
+				setIsHttpError(true);
+				setIsLoadingHeaders(false);
+			}
+		}
+	}, [siteUrl, url, website]);
 
 	return (
 		<div className='container mx-auto mb-8'>
@@ -112,24 +123,15 @@ function App() {
 
 			{isHttpError && <h3>Error getting data from website</h3>}
 
-			{website && !isLoadingHeaders && !isHttpError && (
-				<div className='mt-4'>
-					<h3>Website: {website}</h3>
-					<p>
-						Number of posts:{' '}
-						{response && parseInt(response.headers['x-wp-total'])}
-					</p>
-				</div>
-			)}
 			{website && !isLoadingHeaders && !isHttpError && posts.length > 0 ? (
-				<>
-					<Overview posts={posts} />
+				<div className='mt-4'>
 					<div className='flex'>
-						<Categories siteUrl={siteUrl} />
+						<Overview posts={posts} headers={headers} />
+						<Categories categories={categories} />
 						<Stats posts={posts} />
 					</div>
 					<PostTable posts={posts} />
-				</>
+				</div>
 			) : (
 				website && !isHttpError && <h5>Loading posts...</h5>
 			)}

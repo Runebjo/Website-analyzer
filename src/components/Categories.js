@@ -1,9 +1,7 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import axios from 'axios';
+import React, { useState, useMemo } from 'react';
 import { SortableHeader } from './SortableHeader';
 
-export const Categories = ({ siteUrl }) => {
-	const [categories, setCategories] = useState([]);
+export const Categories = ({ categories }) => {
 	const [currentSort, setCurrentSort] = useState({
 		key: 'name',
 		isAscending: true,
@@ -21,17 +19,9 @@ export const Categories = ({ siteUrl }) => {
 		});
 		return orderedPosts;
 	}, [categories, currentSort.isAscending, currentSort.key]);
-	useEffect(() => {
-		axios
-			.get(`${siteUrl}/wp-json/wp/v2/categories?per_page=100`)
-			.then(response => {
-				console.log('response.data', response.data);
-				setCategories(response.data);
-			});
-	}, [siteUrl]);
 
 	return (
-		<table className='mt-4 table-auto'>
+		<table className='mt-4 ml-4 table-auto'>
 			<thead>
 				<tr>
 					<SortableHeader
