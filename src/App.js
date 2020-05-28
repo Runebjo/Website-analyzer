@@ -11,14 +11,12 @@ function App() {
 	const [headers, setHeaders] = useState({});
 	const [urlInput, setUrlInput] = useState('');
 	const [url, setUrl] = useState('');
-	const [website, setWebsite] = useState('');
 	const [isLoadingHeaders, setIsLoadingHeaders] = useState(false);
 	const [isHttpError, setIsHttpError] = useState(false);
 	const [siteUrl, setSiteUrl] = useState('');
 
 	function submitUrl(e) {
 		e.preventDefault();
-		setWebsite(urlInput);
 		setIsHttpError(false);
 		setPosts([]);
 
@@ -92,7 +90,7 @@ function App() {
 			setPosts(processedPost);
 			setCategories(categories);
 		}
-		if (website) {
+		if (siteUrl) {
 			try {
 				setIsLoadingHeaders(true);
 				addData();
@@ -102,7 +100,7 @@ function App() {
 				setIsLoadingHeaders(false);
 			}
 		}
-	}, [siteUrl, url, website]);
+	}, [siteUrl, url]);
 
 	return (
 		<div className='container mx-auto mb-8'>
@@ -123,7 +121,7 @@ function App() {
 
 			{isHttpError && <h3>Error getting data from website</h3>}
 
-			{website && !isLoadingHeaders && !isHttpError && posts.length > 0 ? (
+			{!isLoadingHeaders && !isHttpError && posts.length > 0 ? (
 				<div className='mt-4'>
 					<div className='flex'>
 						<Overview posts={posts} headers={headers} />
@@ -133,7 +131,7 @@ function App() {
 					<PostTable posts={posts} />
 				</div>
 			) : (
-				website && !isHttpError && <h5>Loading posts...</h5>
+				siteUrl && !isHttpError && <h5>Loading posts...</h5>
 			)}
 		</div>
 	);

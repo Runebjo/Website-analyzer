@@ -20,9 +20,11 @@ export const Overview = ({ posts, headers }) => {
 	return (
 		<table className='mt-4 table-auto'>
 			<thead>
-				<th colSpan='2' className={`px-4 py-2 bg-gray-300 text-left`}>
-					Overview
-				</th>
+				<tr>
+					<th colSpan='2' className={`px-4 py-2 bg-gray-300 text-left`}>
+						Overview
+					</th>
+				</tr>
 			</thead>
 			<tbody>
 				<tr>
