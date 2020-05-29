@@ -20,6 +20,42 @@ export const Stats = ({ posts }) => {
 		}
 	});
 
+	const date = new Date();
+
+	const thisYearMonthKey = `${date.getFullYear()}:${(date.getMonth() + 1)
+		.toString()
+		.padStart(2, '0')}`;
+
+	let firstPostDate = new Date(posts[posts.length - 1].createdDate);
+	let currentDate = new Date(
+		firstPostDate.getFullYear(),
+		firstPostDate.getMonth(),
+		1
+	);
+
+	let currentDateKey = `${currentDate.getFullYear()}:${(
+		firstPostDate.getMonth() + 1
+	)
+		.toString()
+		.padStart(2, '0')}`;
+
+	firstPostDate = new Date(
+		firstPostDate.setMonth(firstPostDate.getMonth() + 1)
+	);
+
+	while (currentDateKey <= thisYearMonthKey) {
+		console.log('currentDateKey', currentDateKey);
+		if (!postByMonthStatObject[currentDateKey]) {
+			postByMonthStatObject[currentDateKey] = 0;
+		}
+		currentDate = new Date(currentDate.setMonth(currentDate.getMonth() + 1));
+		currentDateKey = `${currentDate.getFullYear()}:${(
+			currentDate.getMonth() + 1
+		)
+			.toString()
+			.padStart(2, '0')}`;
+	}
+
 	let postByMonthStatArray = Object.keys(postByMonthStatObject).map(key => {
 		return {
 			key: key,
