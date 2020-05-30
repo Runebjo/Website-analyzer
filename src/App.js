@@ -26,7 +26,7 @@ function App() {
 				? urlInput
 				: `https://${urlInput}`;
 
-		setUrl(`${blogUrl}/wp-json/wp/v2/posts`);
+		setUrl(`${blogUrl}/wp-json/wp/v2/posts?per_page=100`);
 		setSiteUrl(blogUrl);
 	}
 
@@ -52,13 +52,15 @@ function App() {
 				totalPosts: response.headers['x-wp-total'],
 				baseAddress: siteUrl,
 			};
+			console.log('totalPosts', headers.totalPosts);
+			console.log('totalPages', headers.totalPages);
 			setHeaders(headers);
 			return headers;
 		}
 		async function getAllPosts(totalPages) {
 			const posts = [];
 			for (let page = 1; page <= totalPages; page++) {
-				const post = axios.get(`${url}?per_page=10&page=${page}`);
+				const post = axios.get(`${url}&page=${page}`);
 				posts.push(post);
 			}
 			const allPosts = await axios.all(posts);
@@ -97,6 +99,7 @@ function App() {
 				addData();
 				setIsLoadingHeaders(false);
 			} catch (error) {
+				console.log('httpError', error);
 				setIsHttpError(true);
 				setIsLoadingHeaders(false);
 			}

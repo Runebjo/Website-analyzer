@@ -44,7 +44,6 @@ export const Stats = ({ posts }) => {
 	);
 
 	while (currentDateKey <= thisYearMonthKey) {
-		console.log('currentDateKey', currentDateKey);
 		if (!postByMonthStatObject[currentDateKey]) {
 			postByMonthStatObject[currentDateKey] = 0;
 		}
