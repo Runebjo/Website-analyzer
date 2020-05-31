@@ -3,12 +3,12 @@ import { SortableHeader } from './SortableHeader';
 
 export const Categories = ({ categories }) => {
 	const [currentSort, setCurrentSort] = useState({
-		key: 'name',
-		isAscending: true,
+		key: 'numberOfPosts',
+		isAscending: false,
 	});
 	const orderedCategories = useMemo(() => {
-		let orderedPosts = [...categories];
-		orderedPosts.sort((a, b) => {
+		let orderedCategories = [...categories];
+		orderedCategories.sort((a, b) => {
 			if (a[currentSort.key] > b[currentSort.key]) {
 				return currentSort.isAscending ? 1 : -1;
 			}
@@ -17,7 +17,7 @@ export const Categories = ({ categories }) => {
 			}
 			return 0;
 		});
-		return orderedPosts;
+		return orderedCategories;
 	}, [categories, currentSort.isAscending, currentSort.key]);
 
 	return (
@@ -30,7 +30,12 @@ export const Categories = ({ categories }) => {
 						setCurrentSort={setCurrentSort}>
 						Category
 					</SortableHeader>
-					<th className={`px-4 py-2 bg-gray-300 text-left`}>Number of Posts</th>
+					<SortableHeader
+						fieldname='numberOfPosts'
+						currentSort={currentSort}
+						setCurrentSort={setCurrentSort}>
+						Number of Posts
+					</SortableHeader>
 				</tr>
 			</thead>
 			<tbody>
@@ -40,7 +45,7 @@ export const Categories = ({ categories }) => {
 							key={category.id}
 							className={`${index % 2 !== 0 ? 'bg-gray-200' : ''}`}>
 							<td className='px-4 py-2 border'>{category.name}</td>
-							<td className='px-4 py-2 border'>N/A</td>
+							<td className='px-4 py-2 border'>{category.numberOfPosts}</td>
 						</tr>
 					))}
 			</tbody>

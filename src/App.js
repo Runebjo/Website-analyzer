@@ -44,6 +44,19 @@ function App() {
 		return str.split(' ').length;
 	}
 
+	function addNumberOfPostsInCategories(categories, posts) {
+		const categoryiesWithNumberOfPosts = categories.map(category => {
+			return {
+				id: category.id,
+				name: category.name,
+				numberOfPosts: posts.filter(post =>
+					post.categories.includes(category.id)
+				).length,
+			};
+		});
+		return categoryiesWithNumberOfPosts;
+	}
+
 	useEffect(() => {
 		async function getHeaderData() {
 			const response = await axios.get(url);
@@ -90,8 +103,12 @@ function App() {
 					categories: p.categories,
 				};
 			});
+			const categoriesProcessed = addNumberOfPostsInCategories(
+				categories,
+				processedPost
+			);
 			setPosts(processedPost);
-			setCategories(categories);
+			setCategories(categoriesProcessed);
 		}
 		if (siteUrl) {
 			try {
