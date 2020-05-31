@@ -55,10 +55,10 @@ export const PostTable = ({ posts }) => {
 						</SortableHeader>
 						<SortableHeader
 							width='w-1/7'
-							fieldname='modifiedDate'
+							fieldname='categoryNames'
 							currentSort={currentSort}
 							setCurrentSort={setCurrentSort}>
-							Post Modified
+							Categories
 						</SortableHeader>
 						<SortableHeader
 							width='w-2/5'
@@ -82,7 +82,7 @@ export const PostTable = ({ posts }) => {
 							key={post.id}
 							className={`${index % 2 !== 0 ? 'bg-gray-200' : ''}`}>
 							<td className='px-4 py-2 border'>{post.createdDate}</td>
-							<td className='px-4 py-2 border'>{post.modifiedDate}</td>
+							<td className='px-4 py-2 border'>{post.categoryNames}</td>
 							<td className='px-4 py-2 border'>
 								<a
 									className='text-blue-600 visited:text-blue-800 hover:text-blue-300'

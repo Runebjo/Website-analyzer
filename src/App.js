@@ -101,6 +101,12 @@ function App() {
 					numberOfWords: countWords(p.content.rendered),
 					link: p.link,
 					categories: p.categories,
+					categoryNames: p.categories
+						.map(categoryId => {
+							const category = categories.find(c => c.id === categoryId);
+							return category.name;
+						})
+						.join(' | '),
 				};
 			});
 			const categoriesProcessed = addNumberOfPostsInCategories(
