@@ -20,6 +20,7 @@ function App() {
 		e.preventDefault();
 		setIsHttpError(false);
 		setPosts([]);
+		setHeaders({});
 
 		const blogUrl =
 			urlInput.startsWith('https://') || urlInput.startsWith('http://')
