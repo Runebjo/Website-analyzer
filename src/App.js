@@ -27,7 +27,9 @@ function App() {
 				? urlInput
 				: `https://${urlInput}`;
 
-		setUrl(`${blogUrl}/wp-json/wp/v2/posts?per_page=100`);
+		setUrl(
+			`https://cors-anywhere.herokuapp.com/${blogUrl}/wp-json/wp/v2/posts?per_page=100`
+		);
 		setSiteUrl(blogUrl);
 	}
 
@@ -82,7 +84,7 @@ function App() {
 		}
 		async function getCategories() {
 			const response = await axios.get(
-				`${siteUrl}/wp-json/wp/v2/categories?per_page=100`
+				`https://cors-anywhere.herokuapp.com/${siteUrl}/wp-json/wp/v2/categories?per_page=100`
 			);
 			const categories = response.data;
 			return categories;
