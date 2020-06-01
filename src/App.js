@@ -178,7 +178,10 @@ function App() {
 					</div>
 				</>
 			) : (
-				siteUrl && !isHttpError && <h5>Loading posts...</h5>
+				siteUrl &&
+				!isHttpError && (
+					<h5>Loading {headers && headers.totalPosts} posts...</h5>
+				)
 			)}
 		</div>
 	);
