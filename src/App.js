@@ -91,46 +91,46 @@ function App() {
 		}
 		async function addData() {
 			setIsLoadingHeaders(true);
-			const headerData = await getHeaderData();
-			const allPosts = await getAllPosts(headerData.totalPages);
-			const categories = await getCategories();
-			const postFlattened = allPosts.map(a => a.data).flat();
-			const processedPost = postFlattened
-				.filter(p => p !== '')
-				.map(p => {
-					return {
-						id: p.id,
-						createdDate: p.date.substr(0, 10),
-						modifiedDate: p.modified.substr(0, 10),
-						title: decodeHtml(p.title.rendered),
-						numberOfWords: countWords(p.content.rendered),
-						link: p.link,
-						categories: p.categories,
-						categoryNames: p.categories
-							.map(categoryId => {
-								const category = categories.find(c => c.id === categoryId);
-								return category.name;
-							})
-							.join(' | '),
-					};
-				});
-			const categoriesProcessed = addNumberOfPostsInCategories(
-				categories,
-				processedPost
-			);
-			setPosts(processedPost);
-			setCategories(categoriesProcessed);
-		}
-		if (siteUrl) {
 			try {
-				setIsLoadingHeaders(true);
-				addData();
-				setIsLoadingHeaders(false);
+				const headerData = await getHeaderData();
+				const allPosts = await getAllPosts(headerData.totalPages);
+				const categories = await getCategories();
+				const postFlattened = allPosts.map(a => a.data).flat();
+				const processedPost = postFlattened
+					.filter(p => p !== '')
+					.map(p => {
+						return {
+							id: p.id,
+							createdDate: p.date.substr(0, 10),
+							modifiedDate: p.modified.substr(0, 10),
+							title: decodeHtml(p.title.rendered),
+							numberOfWords: countWords(p.content.rendered),
+							link: p.link,
+							categories: p.categories,
+							categoryNames: p.categories
+								.map(categoryId => {
+									const category = categories.find(c => c.id === categoryId);
+									return category.name;
+								})
+								.join(' | '),
+						};
+					});
+				const categoriesProcessed = addNumberOfPostsInCategories(
+					categories,
+					processedPost
+				);
+				setPosts(processedPost);
+				setCategories(categoriesProcessed);
 			} catch (error) {
-				console.log('httpError', error);
+				console.log('error', error);
 				setIsHttpError(true);
 				setIsLoadingHeaders(false);
 			}
+		}
+		if (siteUrl) {
+			setIsLoadingHeaders(true);
+			addData();
+			setIsLoadingHeaders(false);
 		}
 	}, [siteUrl, url]);
 
