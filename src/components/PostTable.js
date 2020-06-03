@@ -1,13 +1,16 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useContext } from 'react';
 import { SortableHeader } from './SortableHeader';
+import { SearchContext } from './../App';
 
 export const PostTable = ({ posts }) => {
 	const [orderedPosts, setOrderedPosts] = useState([]);
+	//const [searchValue, setSearchValue] = useState('');
 	const [filteredPosts, setFilteredPosts] = useState([]);
 	const [currentSort, setCurrentSort] = useState({
 		key: 'createdDate',
 		isAscending: false,
 	});
+	const searchContext = useContext(SearchContext);
 
 	useMemo(() => {
 		let orderedPosts = [...posts];
@@ -26,24 +29,43 @@ export const PostTable = ({ posts }) => {
 
 	useEffect(() => {}, [orderedPosts]);
 
-	function filterPosts({ target }) {
-		const inputValue = target.value;
-		const filteredOrderedPosts = orderedPosts.filter(
-			o =>
-				o.title.toUpperCase().includes(inputValue.toUpperCase()) ||
-				o.categoryNames.toUpperCase().includes(inputValue.toUpperCase())
-		);
-		setFilteredPosts(filteredOrderedPosts);
-	}
+	useEffect(() => {
+		function filterPosts(searchValue) {
+			const filteredOrderedPosts = orderedPosts.filter(
+				o =>
+					o.title.toUpperCase().includes(searchValue.toUpperCase()) ||
+					o.categoryNames.toUpperCase().includes(searchValue.toUpperCase())
+			);
+			setFilteredPosts(filteredOrderedPosts);
+		}
+
+		filterPosts(searchContext.searchState);
+	}, [orderedPosts, searchContext.searchState]);
 
 	return (
 		<div>
 			<span>Filter posts</span>
 			<input
 				type='text'
-				onChange={filterPosts}
+				onChange={e =>
+					searchContext.searchDispatch({
+						type: 'SET_SEARCH_VALUE',
+						payload: e.target.value,
+					})
+				}
+				value={searchContext.searchState}
 				className='w-64 px-4 py-1 mt-4 ml-4 leading-normal bg-white border border-gray-300 rounded-lg appearance-none focus:outline-none focus:shadow-outline'
 			/>
+			<button
+				className='px-4 py-1 ml-1 border rounded-lg focus:outline-none focus:shadow-outline'
+				onClick={() =>
+					searchContext.searchDispatch({
+						type: 'SET_SEARCH_VALUE',
+						payload: '',
+					})
+				}>
+				Reset
+			</button>
 			<span className='ml-4'>Number of Posts: {filteredPosts.length}</span>
 			<table className='w-full mt-4 table-fixed'>
 				<thead>

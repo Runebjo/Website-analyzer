@@ -1,9 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useReducer } from 'react';
 import axios from 'axios';
 import { PostTable } from './components/PostTable';
 import { Stats } from './components/Stats';
 import { Overview } from './components/Overview';
 import { Categories } from './components/Categories';
+
+export const SearchContext = React.createContext();
+
+const initialState = 'hello';
+const reducer = (state, action) => {
+	console.log('state', state);
+	console.log('action', action);
+	switch (action.type) {
+		case 'SET_SEARCH_VALUE':
+			return action.payload;
+		default:
+			return state;
+	}
+};
 
 function App() {
 	const [posts, setPosts] = useState([]);
@@ -15,6 +29,7 @@ function App() {
 	const [isHttpError, setIsHttpError] = useState(false);
 	const [siteUrl, setSiteUrl] = useState('');
 	const [overviewIsActive, setOverviewIsActive] = useState(true);
+	const [searchValue, dispatch] = useReducer(reducer, initialState);
 
 	function submitUrl(e) {
 		e.preventDefault();
@@ -134,61 +149,66 @@ function App() {
 		}
 	}, [siteUrl, url]);
 
+	function viewPosts() {
+		setOverviewIsActive(false);
+	}
+
 	return (
-		<div className='container mx-auto mb-8'>
-			<form onSubmit={submitUrl}>
-				<input
-					type='text'
-					name='url'
-					value={urlInput}
-					placeholder='Enter website url...'
-					onChange={e => setUrlInput(e.target.value)}
-					onFocus={e => setUrlInput('')}
-					className='w-64 px-4 py-1 mt-4 leading-normal bg-white border border-gray-300 rounded-lg appearance-none focus:outline-none focus:shadow-outline'
-				/>
-				<button className='px-4 py-1 ml-1 border rounded-lg focus:outline-none focus:shadow-outline'>
-					Search
-				</button>
-			</form>
-
-			{isHttpError && <h3>Error getting data from website</h3>}
-
-			{!isLoadingHeaders && !isHttpError && posts.length > 0 ? (
-				<>
-					<div className='mt-8'>
-						<button
-							onClick={() => setOverviewIsActive(true)}
-							className={`text-blue-600 visited:text-blue-800 hover:text-blue-300 focus:outline-none ${
-								overviewIsActive ? 'underline' : ''
-							}`}>
-							Overview
-						</button>
-						<button
-							onClick={() => setOverviewIsActive(false)}
-							className={`ml-4 text-blue-600 visited:text-blue-800 hover:text-blue-300 focus:outline-none ${
-								!overviewIsActive ? 'underline' : ''
-							}`}>
-							Posts
-						</button>
-					</div>
-					<div className='mt-4'>
-						{overviewIsActive && (
-							<div className='flex'>
-								<Overview posts={posts} headers={headers} />
-								<Categories categories={categories} />
-								<Stats posts={posts} />
-							</div>
-						)}
-						{!overviewIsActive && <PostTable posts={posts} />}
-					</div>
-				</>
-			) : (
-				siteUrl &&
-				!isHttpError && (
-					<h5>Loading {headers && headers.totalPosts} posts...</h5>
-				)
-			)}
-		</div>
+		<SearchContext.Provider
+			value={{ searchState: searchValue, searchDispatch: dispatch }}>
+			<div className='container mx-auto mb-8'>
+				<form onSubmit={submitUrl}>
+					<input
+						type='text'
+						name='url'
+						value={urlInput}
+						placeholder='Enter website url...'
+						onChange={e => setUrlInput(e.target.value)}
+						onFocus={e => setUrlInput('')}
+						className='w-64 px-4 py-1 mt-4 leading-normal bg-white border border-gray-300 rounded-lg appearance-none focus:outline-none focus:shadow-outline'
+					/>
+					<button className='px-4 py-1 ml-1 border rounded-lg focus:outline-none focus:shadow-outline'>
+						Search
+					</button>
+				</form>
+				{isHttpError && <h3>Error getting data from website</h3>}
+				{!isLoadingHeaders && !isHttpError && posts.length > 0 ? (
+					<>
+						<div className='mt-8'>
+							<button
+								onClick={() => setOverviewIsActive(true)}
+								className={`text-blue-600 visited:text-blue-800 hover:text-blue-300 focus:outline-none ${
+									overviewIsActive ? 'underline' : ''
+								}`}>
+								Overview
+							</button>
+							<button
+								onClick={() => setOverviewIsActive(false)}
+								className={`ml-4 text-blue-600 visited:text-blue-800 hover:text-blue-300 focus:outline-none ${
+									!overviewIsActive ? 'underline' : ''
+								}`}>
+								Posts
+							</button>
+						</div>
+						<div className='mt-4'>
+							{overviewIsActive && (
+								<div className='flex'>
+									<Overview posts={posts} headers={headers} />
+									<Categories categories={categories} viewPosts={viewPosts} />
+									<Stats posts={posts} />
+								</div>
+							)}
+							{!overviewIsActive && <PostTable posts={posts} />}
+						</div>
+					</>
+				) : (
+					siteUrl &&
+					!isHttpError && (
+						<h5>Loading {headers && headers.totalPosts} posts...</h5>
+					)
+				)}
+			</div>
+		</SearchContext.Provider>
 	);
 }
 
