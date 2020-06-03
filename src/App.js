@@ -7,7 +7,7 @@ import { Categories } from './components/Categories';
 
 export const SearchContext = React.createContext();
 
-const initialState = 'hello';
+const initialState = '';
 const reducer = (state, action) => {
 	console.log('state', state);
 	console.log('action', action);
