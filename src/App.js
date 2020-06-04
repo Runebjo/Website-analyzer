@@ -204,7 +204,14 @@ function App() {
 				) : (
 					siteUrl &&
 					!isHttpError && (
-						<h5>Loading {headers && headers.totalPosts} posts...</h5>
+						<div className='fixed top-0 bottom-0 left-0 right-0 flex items-center justify-center'>
+							<div>
+								<div className='w-32 h-32 ease-linear border-8 border-t-8 border-gray-200 rounded-full loader'></div>
+								<h5 className='mt-4 text-center'>
+									Loading {headers && headers.totalPosts} posts...
+								</h5>
+							</div>
+						</div>
 					)
 				)}
 			</div>
