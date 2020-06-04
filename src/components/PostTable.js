@@ -91,13 +91,14 @@ export const PostTable = ({ posts }) => {
 							setCurrentSort={setCurrentSort}>
 							Title
 						</SortableHeader>
-						<th className='px-4 py-2 text-left bg-gray-300'>Google Search</th>
+						<th className='px-4 py-2 text-left bg-gray-300'></th>
 						<SortableHeader
 							fieldname='numberOfWords'
 							currentSort={currentSort}
 							setCurrentSort={setCurrentSort}>
 							Word Count
 						</SortableHeader>
+						<th className='px-4 py-2 text-left bg-gray-300'></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -126,6 +127,30 @@ export const PostTable = ({ posts }) => {
 								</a>
 							</td>
 							<td className='px-4 py-2 border'>{post.numberOfWords}</td>
+							<td className='px-4 py-2 text-center border'>
+								<a
+									href={`https://www.google.com/search?q=${post.title}`}
+									target='_blank'
+									rel='noopener noreferrer'>
+									<svg
+										className='inline-block w-6 h-6'
+										xmlns='http://www.w3.org/2000/svg'
+										viewBox='0 0 20 20'>
+										<path d='M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.33-1.42 1.42-5.33-5.34zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z' />
+									</svg>
+								</a>
+								<button
+									type='button'
+									onClick={() => console.log('hello')}
+									className='focus:outline-none'>
+									<svg
+										className='inline-block w-6 h-6 ml-2'
+										xmlns='http://www.w3.org/2000/svg'
+										viewBox='0 0 20 20'>
+										<path d='M1 1h18v2H1V1zm0 8h18v2H1V9zm0 8h18v2H1v-2zM1 5h18v2H1V5zm0 8h18v2H1v-2z' />
+									</svg>
+								</button>
+							</td>
 						</tr>
 					))}
 				</tbody>
