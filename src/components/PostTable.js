@@ -141,7 +141,7 @@ export const PostTable = ({ posts }) => {
 								</a>
 								<button
 									type='button'
-									onClick={() => console.log('hello')}
+									onClick={() => console.log(post.outline)}
 									className='focus:outline-none'>
 									<svg
 										className='inline-block w-6 h-6 ml-2'

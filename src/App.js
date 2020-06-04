@@ -62,6 +62,14 @@ function App() {
 		return str.split(' ').length;
 	}
 
+	function getOutline(content) {
+		var div = document.createElement('div');
+		div.innerHTML = content.trim();
+		const h2Elements = div.querySelectorAll('h2');
+		const outline = Array.from(h2Elements).map(h => h.innerText);
+		return outline;
+	}
+
 	function addNumberOfPostsInCategories(categories, posts) {
 		const categoryiesWithNumberOfPosts = categories.map(category => {
 			return {
@@ -120,6 +128,7 @@ function App() {
 							modifiedDate: p.modified.substr(0, 10),
 							title: decodeHtml(p.title.rendered),
 							numberOfWords: countWords(p.content.rendered),
+							outline: getOutline(p.content.rendered),
 							link: p.link,
 							categories: p.categories,
 							categoryNames: p.categories
