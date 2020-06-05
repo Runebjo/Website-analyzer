@@ -1,15 +1,17 @@
 import React, { useState, useMemo, useEffect, useContext } from 'react';
 import { SortableHeader } from './SortableHeader';
 import { SearchContext } from './../App';
+import { Modal } from './Modal';
 
 export const PostTable = ({ posts }) => {
 	const [orderedPosts, setOrderedPosts] = useState([]);
-	//const [searchValue, setSearchValue] = useState('');
 	const [filteredPosts, setFilteredPosts] = useState([]);
 	const [currentSort, setCurrentSort] = useState({
 		key: 'createdDate',
 		isAscending: false,
 	});
+	const [displayModal, setDisplayModal] = useState(false);
+	const [outline, setOutline] = useState([]);
 	const searchContext = useContext(SearchContext);
 
 	useMemo(() => {
@@ -42,8 +44,20 @@ export const PostTable = ({ posts }) => {
 		filterPosts(searchContext.searchState);
 	}, [orderedPosts, searchContext.searchState]);
 
+	function displayOutline(outline) {
+		setOutline(outline);
+		setDisplayModal(true);
+	}
+
+	function closeModal() {
+		setDisplayModal(false);
+	}
+
 	return (
 		<div>
+			{displayModal && (
+				<div class='bg-gray-900 h-screen opacity-75 fixed top-0 bottom-0 left-0 right-0'></div>
+			)}
 			<span>Filter posts</span>
 			<input
 				type='text'
@@ -141,7 +155,7 @@ export const PostTable = ({ posts }) => {
 								</a>
 								<button
 									type='button'
-									onClick={() => console.log(post.outline)}
+									onClick={() => displayOutline(post.outline)}
 									className='focus:outline-none'>
 									<svg
 										className='inline-block w-6 h-6 ml-2'
@@ -155,6 +169,7 @@ export const PostTable = ({ posts }) => {
 					))}
 				</tbody>
 			</table>
+			{displayModal && <Modal outline={outline} closeModal={closeModal} />}
 		</div>
 	);
 };
