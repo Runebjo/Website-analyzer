@@ -92,7 +92,7 @@ export const PostTable = ({ posts }) => {
 							Post Created
 						</SortableHeader>
 						<SortableHeader
-							width='w-1/7'
+							width='w-1/4'
 							fieldname='categoryNames'
 							currentSort={currentSort}
 							setCurrentSort={setCurrentSort}>
@@ -105,12 +105,11 @@ export const PostTable = ({ posts }) => {
 							setCurrentSort={setCurrentSort}>
 							Title
 						</SortableHeader>
-						<th className='px-4 py-2 text-left bg-gray-300'></th>
 						<SortableHeader
 							fieldname='numberOfWords'
 							currentSort={currentSort}
 							setCurrentSort={setCurrentSort}>
-							Word Count
+							Words
 						</SortableHeader>
 						<th className='px-4 py-2 text-left bg-gray-300'></th>
 					</tr>
@@ -129,15 +128,6 @@ export const PostTable = ({ posts }) => {
 									target='_blank'
 									rel='noopener noreferrer'>
 									{post.title}
-								</a>
-							</td>
-							<td className='px-4 py-2 border'>
-								<a
-									className='text-blue-600 visited:text-blue-800 hover:text-blue-300'
-									href={`https://www.google.com/search?q=${post.title}`}
-									target='_blank'
-									rel='noopener noreferrer'>
-									Google Search
 								</a>
 							</td>
 							<td className='px-4 py-2 border'>{post.numberOfWords}</td>
