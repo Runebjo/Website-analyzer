@@ -36,6 +36,12 @@ function App() {
 		setIsHttpError(false);
 		setPosts([]);
 		setHeaders({});
+		setOverviewIsActive(true);
+
+		dispatch({
+			type: 'SET_SEARCH_VALUE',
+			payload: '',
+		});
 
 		const blogUrl =
 			urlInput.startsWith('https://') || urlInput.startsWith('http://')
