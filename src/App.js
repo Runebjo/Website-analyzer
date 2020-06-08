@@ -4,20 +4,11 @@ import { PostTable } from './components/PostTable';
 import { Stats } from './components/Stats';
 import { Overview } from './components/Overview';
 import { Categories } from './components/Categories';
+import { countWords, decodeHtml, getOutline } from './utils/ContentScraper';
+import { reducer } from './Reducer';
+import { DispatchTypes } from './utils/DispatchTypes';
 
 export const SearchContext = React.createContext();
-
-const initialState = '';
-const reducer = (state, action) => {
-	console.log('state', state);
-	console.log('action', action);
-	switch (action.type) {
-		case 'SET_SEARCH_VALUE':
-			return action.payload;
-		default:
-			return state;
-	}
-};
 
 function App() {
 	const [posts, setPosts] = useState([]);
@@ -29,7 +20,7 @@ function App() {
 	const [isHttpError, setIsHttpError] = useState(false);
 	const [siteUrl, setSiteUrl] = useState('');
 	const [overviewIsActive, setOverviewIsActive] = useState(true);
-	const [searchValue, dispatch] = useReducer(reducer, initialState);
+	const [searchValue, dispatch] = useReducer(reducer, '');
 
 	function submitUrl(e) {
 		e.preventDefault();
@@ -39,7 +30,7 @@ function App() {
 		setOverviewIsActive(true);
 
 		dispatch({
-			type: 'SET_SEARCH_VALUE',
+			type: DispatchTypes.SET_SEARCH_VALUE,
 			payload: '',
 		});
 
@@ -52,28 +43,6 @@ function App() {
 			`https://cors-anywhere.herokuapp.com/${blogUrl}/wp-json/wp/v2/posts?per_page=20`
 		);
 		setSiteUrl(blogUrl);
-	}
-
-	function decodeHtml(html) {
-		var txt = document.createElement('textarea');
-		txt.innerHTML = html;
-		return txt.value;
-	}
-
-	function countWords(str) {
-		str = str.replace(/(^\s*)|(\s*$)/gi, '');
-		str = str.replace(/[ ]{2,}/gi, ' ');
-		str = str.replace(/\n /, '\n');
-		str = str.replace(/<[^>]*>?/gm, '');
-		return str.split(' ').length;
-	}
-
-	function getOutline(content) {
-		var div = document.createElement('div');
-		div.innerHTML = content.trim();
-		const h2Elements = div.querySelectorAll('h2');
-		const outline = Array.from(h2Elements).map(h => h.innerText);
-		return outline;
 	}
 
 	function addNumberOfPostsInCategories(categories, posts) {

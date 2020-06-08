@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useContext } from 'react';
 import { SortableHeader } from './SortableHeader';
 import { SearchContext } from '../App';
+import { DispatchTypes } from './../utils/DispatchTypes';
 
 export const Categories = ({ categories, viewPosts }) => {
 	const [currentSort, setCurrentSort] = useState({
@@ -50,7 +51,7 @@ export const Categories = ({ categories, viewPosts }) => {
 								className='px-4 py-2 text-blue-600 border cursor-pointer visited:text-blue-800 hover:text-blue-300 focus:outline-none'
 								onClick={() => {
 									searchContext.searchDispatch({
-										type: 'SET_SEARCH_VALUE',
+										type: DispatchTypes.SET_SEARCH_VALUE,
 										payload: category.name,
 									});
 									viewPosts();
