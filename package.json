@@ -19,6 +19,7 @@
 		"test": "react-scripts test",
 		"eject": "react-scripts eject",
 		"start:plain": "react-scripts start",
+		"build:plain": "react-scripts build",
 		"build:style": "postcss build src/styles/index.css -o src/styles/tailwind.css"
 	},
 	"eslintConfig": {
