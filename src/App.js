@@ -4,6 +4,7 @@ import { PostTable } from './components/PostTable';
 import { Stats } from './components/Stats';
 import { Overview } from './components/Overview';
 import { Categories } from './components/Categories';
+import { Authors } from './components/Authors';
 import { countWords, decodeHtml, getOutline } from './utils/ContentScraper';
 import { reducer } from './Reducer';
 import { DispatchTypes } from './utils/DispatchTypes';
@@ -13,6 +14,7 @@ export const SearchContext = React.createContext();
 function App() {
 	const [posts, setPosts] = useState([]);
 	const [categories, setCategories] = useState([]);
+	const [authors, setAuthors] = useState([]);
 	const [headers, setHeaders] = useState({});
 	const [urlInput, setUrlInput] = useState('');
 	const [url, setUrl] = useState('');
@@ -58,6 +60,19 @@ function App() {
 		return categoryiesWithNumberOfPosts;
 	}
 
+	function addNumberOfPostsInAuthors(authors, posts) {
+		const authorsWithNumberOfPosts = authors.map(author => {
+			return {
+				id: author.id,
+				name: author.name,
+				numberOfPosts: posts.filter(post =>
+					post.author === author.id
+				).length,
+			};
+		});
+		return authorsWithNumberOfPosts;
+	}
+
 	useEffect(() => {
 		async function getHeaderData() {
 			const response = await axios.get(url);
@@ -87,12 +102,20 @@ function App() {
 			const categories = response.data;
 			return categories;
 		}
+		async function getAuthors() {
+			const response = await axios.get(
+				`https://cors-anywhere.herokuapp.com/${siteUrl}/wp-json/wp/v2/users?per_page=100`
+			);
+			const authors = response.data;
+			return authors;
+		}
 		async function addData() {
 			setIsLoadingHeaders(true);
 			try {
 				const headerData = await getHeaderData();
 				const allPosts = await getAllPosts(headerData.totalPages);
 				const categories = await getCategories();
+				const authors = await getAuthors();
 				const postFlattened = allPosts.map(a => a.data).flat();
 				const processedPost = postFlattened
 					.filter(p => p !== '')
@@ -106,6 +129,7 @@ function App() {
 							outline: getOutline(p.content.rendered),
 							link: p.link,
 							categories: p.categories,
+							author: p.author,
 							categoryNames: p.categories
 								.map(categoryId => {
 									const category = categories.find(c => c.id === categoryId);
@@ -118,8 +142,13 @@ function App() {
 					categories,
 					processedPost
 				);
+				const authorsProcessed = addNumberOfPostsInAuthors(
+					authors,
+					processedPost
+				)
 				setPosts(processedPost);
 				setCategories(categoriesProcessed);
+				setAuthors(authorsProcessed);
 			} catch (error) {
 				console.log('error', error);
 				setIsHttpError(true);
@@ -161,23 +190,24 @@ function App() {
 						<div className='mt-8'>
 							<button
 								onClick={() => setOverviewIsActive(true)}
-								className={`text-blue-600 visited:text-blue-800 hover:text-blue-300 focus:outline-none ${
-									overviewIsActive ? 'underline' : ''
-								}`}>
+								className={`text-blue-600 visited:text-blue-800 hover:text-blue-300 focus:outline-none ${overviewIsActive ? 'underline' : ''
+									}`}>
 								Overview
 							</button>
 							<button
 								onClick={() => setOverviewIsActive(false)}
-								className={`ml-4 text-blue-600 visited:text-blue-800 hover:text-blue-300 focus:outline-none ${
-									!overviewIsActive ? 'underline' : ''
-								}`}>
+								className={`ml-4 text-blue-600 visited:text-blue-800 hover:text-blue-300 focus:outline-none ${!overviewIsActive ? 'underline' : ''
+									}`}>
 								Posts
 							</button>
 						</div>
 						<div className='mt-4'>
 							{overviewIsActive && (
 								<div className='flex'>
-									<Overview posts={posts} headers={headers} />
+									<div>
+										<Overview posts={posts} headers={headers} authors={authors} viewPosts={viewPosts} />
+										<Authors authors={authors} viewPosts={viewPosts} />
+									</div>
 									<Categories categories={categories} viewPosts={viewPosts} />
 									<Stats posts={posts} />
 								</div>
@@ -186,18 +216,18 @@ function App() {
 						</div>
 					</>
 				) : (
-					siteUrl &&
-					!isHttpError && (
-						<div className='fixed top-0 bottom-0 left-0 right-0 flex items-center justify-center'>
-							<div>
-								<div className='w-32 h-32 ease-linear border-8 border-t-8 border-gray-200 rounded-full loader'></div>
-								<h5 className='mt-4 text-center'>
-									Loading {headers && headers.totalPosts} posts...
+						siteUrl &&
+						!isHttpError && (
+							<div className='fixed top-0 bottom-0 left-0 right-0 flex items-center justify-center'>
+								<div>
+									<div className='w-32 h-32 ease-linear border-8 border-t-8 border-gray-200 rounded-full loader'></div>
+									<h5 className='mt-4 text-center'>
+										Loading {headers && headers.totalPosts} posts...
 								</h5>
+								</div>
 							</div>
-						</div>
-					)
-				)}
+						)
+					)}
 			</div>
 		</SearchContext.Provider>
 	);

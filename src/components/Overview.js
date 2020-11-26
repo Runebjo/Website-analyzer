@@ -1,7 +1,8 @@
 import React from 'react';
 import moment from 'moment';
+import { Authors } from './Authors';
 
-export const Overview = ({ posts, headers }) => {
+export const Overview = ({ posts, headers, authors, viewPosts }) => {
 	const margin = 100;
 	const responsePost = 1250 - margin;
 	const staplePost = 2500 - margin;
@@ -15,9 +16,8 @@ export const Overview = ({ posts, headers }) => {
 		const months = diffDuration.months();
 
 		if (years > 0) {
-			return `${years} ${years > 1 ? 'years' : 'year'} ${months} ${
-				months > 1 ? 'months' : 'month'
-			}`;
+			return `${years} ${years > 1 ? 'years' : 'year'} ${months} ${months > 1 ? 'months' : 'month'
+				}`;
 		}
 
 		const siteAge = `${months} ${months > 1 ? 'months' : 'month'}`;
