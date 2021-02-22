@@ -23,6 +23,7 @@ function App() {
 	const [siteUrl, setSiteUrl] = useState('');
 	const [overviewIsActive, setOverviewIsActive] = useState(true);
 	const [searchValue, dispatch] = useReducer(reducer, '');
+	const [cors, setCors] = useState(false);
 
 	function submitUrl(e) {
 		e.preventDefault();
@@ -30,6 +31,8 @@ function App() {
 		setPosts([]);
 		setHeaders({});
 		setOverviewIsActive(true);
+
+		console.log("cors", cors);
 
 		dispatch({
 			type: DispatchTypes.SET_SEARCH_VALUE,
@@ -41,8 +44,12 @@ function App() {
 				? urlInput
 				: `https://${urlInput}`;
 
+		const wpUrl = cors
+			? `https://cors-anywhere.herokuapp.com/${blogUrl}/wp-json/wp/v2/posts?per_page=20`
+			: `${blogUrl}/wp-json/wp/v2/posts?per_page=20`
+
 		setUrl(
-			`https://cors-anywhere.herokuapp.com/${blogUrl}/wp-json/wp/v2/posts?per_page=20`
+			wpUrl
 		);
 		setSiteUrl(blogUrl);
 	}
@@ -96,15 +103,17 @@ function App() {
 			return allPosts;
 		}
 		async function getCategories() {
+			const wpUrl = cors ? `https://cors-anywhere.herokuapp.com/${siteUrl}/wp-json/wp/v2/categories?per_page=100` : `${siteUrl}/wp-json/wp/v2/categories?per_page=100`;
 			const response = await axios.get(
-				`https://cors-anywhere.herokuapp.com/${siteUrl}/wp-json/wp/v2/categories?per_page=100`
+				wpUrl
 			);
 			const categories = response.data;
 			return categories;
 		}
 		async function getAuthors() {
+			const wpUrl = cors ? `https://cors-anywhere.herokuapp.com/${siteUrl}/wp-json/wp/v2/users?per_page=100` : `${siteUrl}/wp-json/wp/v2/users?per_page=100`;
 			const response = await axios.get(
-				`https://cors-anywhere.herokuapp.com/${siteUrl}/wp-json/wp/v2/users?per_page=100`
+				wpUrl
 			);
 			const authors = response.data;
 			return authors;
@@ -184,6 +193,7 @@ function App() {
 						Search
 					</button>
 				</form>
+				<input type="checkbox" onChange={() => setCors(!cors)}></input><span className="ml-2">Use cors</span>
 				{isHttpError && <h3>Error getting data from website</h3>}
 				{!isLoadingHeaders && !isHttpError && posts.length > 0 ? (
 					<>
