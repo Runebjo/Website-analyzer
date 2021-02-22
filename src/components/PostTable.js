@@ -29,7 +29,7 @@ export const PostTable = ({ posts }) => {
 		setFilteredPosts(orderedPosts);
 	}, [currentSort.isAscending, currentSort.key, posts]);
 
-	useEffect(() => {}, [orderedPosts]);
+	useEffect(() => { }, [orderedPosts]);
 
 	useEffect(() => {
 		function filterPosts(searchValue) {
@@ -56,7 +56,7 @@ export const PostTable = ({ posts }) => {
 	return (
 		<div>
 			{displayModal && (
-				<div class='bg-gray-900 h-screen opacity-75 fixed top-0 bottom-0 left-0 right-0'></div>
+				<div className='bg-gray-900 h-screen opacity-75 fixed top-0 bottom-0 left-0 right-0'></div>
 			)}
 			<span>Filter posts</span>
 			<input

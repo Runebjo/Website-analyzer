@@ -15,7 +15,7 @@ export function countWords(str) {
 export function getOutline(content) {
     var div = document.createElement('div');
     div.innerHTML = content.trim();
-    const h2Elements = div.querySelectorAll('h2');
-    const outline = Array.from(h2Elements).map(h => h.innerText);
+    const h2Elements = div.querySelectorAll('h2, h3');
+    const outline = Array.from(h2Elements).map(h => `${h.nodeName}: ${h.innerText}`);
     return outline;
 }

@@ -19,9 +19,12 @@ export const Modal = ({ closeModal, outline }) => {
 					</div>
 					<div className='m-4'>
 						<ul>
-							{outline.map(o => (
-								<li className='pt-1 pb-1'>{o}</li>
-							))}
+							{outline.map(o => {
+								if (o.startsWith("H3")) {
+									return <li className='pt-1 pb-1 ml-4 text-sm'>{o}</li>;
+								}
+								return <li className='pt-1 pb-1 font-bold'>{o}</li>;
+							})}
 						</ul>
 					</div>
 				</div>
