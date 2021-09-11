@@ -63,29 +63,42 @@ export const PostTable = ({ posts }) => {
 			{displayModal && (
 				<div className='bg-gray-900 h-screen opacity-75 fixed top-0 bottom-0 left-0 right-0'></div>
 			)}
-			<span>Filter posts</span>
-			<input
-				type='text'
-				onChange={e =>
-					searchContext.searchDispatch({
-						type: 'SET_SEARCH_VALUE',
-						payload: e.target.value,
-					})
-				}
-				value={searchContext.searchState}
-				className='w-64 px-4 py-1 mt-4 ml-4 leading-normal bg-white border border-gray-300 rounded-lg appearance-none focus:outline-none focus:shadow-outline'
-			/>
-			<button
-				className='px-4 py-1 ml-1 border rounded-lg focus:outline-none focus:shadow-outline'
-				onClick={() =>
-					searchContext.searchDispatch({
-						type: 'SET_SEARCH_VALUE',
-						payload: '',
-					})
-				}>
-				Reset
-			</button>
-			<span className='ml-4'>Number of Posts: {filteredPosts.length}</span>
+			<div className="flex justify-between align items-end">
+				<div>
+					<span>Filter posts</span>
+					<input
+						type='text'
+						onChange={e =>
+							searchContext.searchDispatch({
+								type: 'SET_SEARCH_VALUE',
+								payload: e.target.value,
+							})
+						}
+						value={searchContext.searchState}
+						className='w-64 px-4 py-1 mt-4 ml-4 leading-normal bg-white border border-gray-300 rounded-lg appearance-none focus:outline-none focus:shadow-outline'
+					/>
+					<button
+						className='px-4 py-1 ml-1 border rounded-lg focus:outline-none focus:shadow-outline'
+						onClick={() =>
+							searchContext.searchDispatch({
+								type: 'SET_SEARCH_VALUE',
+								payload: '',
+							})
+						}>
+						Reset
+					</button>
+					<span className='ml-4'>Number of Posts: {filteredPosts.length}</span>
+				</div>
+				<div>
+					<button
+						className='px-4 py-1 ml-1 border rounded-lg focus:outline-none focus:shadow-outline'
+						onClick={() =>
+							console.log("check index")
+						}>
+						Check index
+					</button>
+				</div>
+			</div>
 			<table className='w-full mt-4 table-fixed'>
 				<thead>
 					<tr>
