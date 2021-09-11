@@ -24,7 +24,7 @@ export const Categories = ({ categories, viewPosts }) => {
 	const searchContext = useContext(SearchContext);
 
 	return (
-		<table className='mt-4 ml-4 table-auto'>
+		<table className='mt-4 ml-4 table-auto h-0'>
 			<thead>
 				<tr>
 					<SortableHeader
