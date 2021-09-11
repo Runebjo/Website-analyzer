@@ -1,18 +1,23 @@
 import React, { useState, useMemo, useEffect, useContext } from 'react';
+import axios from 'axios';
 import { SortableHeader } from './SortableHeader';
 import { SearchContext } from './../App';
 import { Modal } from './Modal';
 
-export const PostTable = ({ posts }) => {
+export const PostTable = ({ posts, headers }) => {
 	const [orderedPosts, setOrderedPosts] = useState([]);
 	const [filteredPosts, setFilteredPosts] = useState([]);
+	const [displayIndexStatus, setDisplayIndexStatus] = useState(false);
 	const [currentSort, setCurrentSort] = useState({
 		key: 'createdDate',
 		isAscending: false,
 	});
 	const [displayModal, setDisplayModal] = useState(false);
 	const [outline, setOutline] = useState([]);
+	const [isLoading, setIsLoading] = useState(false);
 	const searchContext = useContext(SearchContext);
+	const APIKEY = '71781d1a14888d20d75832cf627b387d83c19cd798a089db7755d72b2cca5295';
+	const searchUrl = `https://serpapi.com/search.json?engine=google&q=site:${headers.baseAddress}&api_key=${APIKEY}`;
 
 	useMemo(() => {
 		let orderedPosts = [...posts];
@@ -58,6 +63,43 @@ export const PostTable = ({ posts }) => {
 		navigator.clipboard.writeText(url);
 	}
 
+	const checkForIndex = async () => {
+		setIsLoading(true);
+		let serpUrls = [];
+		const response = await axios.get(searchUrl);
+		const {organic_results, serpapi_pagination} = response.data;
+
+		serpUrls = collectUrls(organic_results);
+
+		for (const key in serpapi_pagination.other_pages) {
+			const url = `${serpapi_pagination.other_pages[key]}&api_key=${APIKEY}`;
+			const response = await axios.get(url);
+			const {organic_results} = response.data;
+			let paginatedSerpUrls = collectUrls(organic_results);
+			serpUrls = [...serpUrls, ...paginatedSerpUrls];
+		}
+
+		setIndexedFields(serpUrls);
+		setDisplayIndexStatus(true);
+
+		setIsLoading(false);
+	}
+
+
+	const collectUrls = (organic_results) => {		
+		const serpLinks = organic_results.map(result => result.link);
+		return serpLinks;
+	}
+
+	const setIndexedFields = (serpUrls) => {
+		filteredPosts.forEach(post => {
+			const url = serpUrls.find(url => url === post.link);
+			post.isIndexed = url ? "" : "Not Indexed";
+		})
+
+		setFilteredPosts([...filteredPosts]);
+	}
+
 	return (
 		<div>
 			{displayModal && (
@@ -88,15 +130,18 @@ export const PostTable = ({ posts }) => {
 						Reset
 					</button>
 					<span className='ml-4'>Number of Posts: {filteredPosts.length}</span>
+					{ displayIndexStatus && <span className='ml-4 text-green-500'>Indexed: {filteredPosts.filter(f => !f.isIndexed).length}</span>}
+					{ displayIndexStatus && <span className='ml-4 text-red-500'>Not Indexed: {filteredPosts.filter(f => f.isIndexed).length}</span>}
 				</div>
-				<div>
+				<div className="flex">
 					<button
 						className='px-4 py-1 ml-1 border rounded-lg focus:outline-none focus:shadow-outline'
 						onClick={() =>
-							console.log("check index")
+							checkForIndex()
 						}>
 						Check index
 					</button>
+					{ isLoading && <div className='w-8 h-8 ease-linear border-8 border-t-8 border-gray-200 rounded-full loader inline-block ml-4'></div>}
 				</div>
 			</div>
 			<table className='w-full mt-4 table-fixed'>
@@ -110,7 +155,7 @@ export const PostTable = ({ posts }) => {
 							Post Created
 						</SortableHeader>
 						<SortableHeader
-							width='w-1/4'
+							width={displayIndexStatus ? 'w-1/7' : 'w-1/4'}
 							fieldname='categoryNames'
 							currentSort={currentSort}
 							setCurrentSort={setCurrentSort}>
@@ -129,6 +174,12 @@ export const PostTable = ({ posts }) => {
 							setCurrentSort={setCurrentSort}>
 							Words
 						</SortableHeader>
+						{ displayIndexStatus && <SortableHeader
+							fieldname='isIndexed'
+							currentSort={currentSort}
+							setCurrentSort={setCurrentSort}>
+							In SERP?
+						</SortableHeader>}
 						<th className='px-4 py-2 text-left bg-gray-300'></th>
 					</tr>
 				</thead>
@@ -158,6 +209,7 @@ export const PostTable = ({ posts }) => {
 								</div>
 							</td>
 							<td className='px-4 py-2 border'>{post.numberOfWords}</td>
+							{displayIndexStatus && <td className='px-4 py-2 border'>{post.isIndexed}</td>}
 							<td className='px-4 py-2 text-center border'>
 								<a
 									href={`https://www.google.com/search?q=${post.title}`}

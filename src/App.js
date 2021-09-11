@@ -32,8 +32,6 @@ function App() {
 		setHeaders({});
 		setOverviewIsActive(true);
 
-		console.log("cors", cors);
-
 		dispatch({
 			type: DispatchTypes.SET_SEARCH_VALUE,
 			payload: '',
@@ -222,7 +220,7 @@ function App() {
 									<Stats posts={posts} />
 								</div>
 							)}
-							{!overviewIsActive && <PostTable posts={posts} />}
+							{!overviewIsActive && <PostTable posts={posts} headers={headers} />}
 						</div>
 					</>
 				) : (
