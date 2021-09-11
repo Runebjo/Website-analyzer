@@ -53,6 +53,11 @@ export const PostTable = ({ posts }) => {
 		setDisplayModal(false);
 	}
 
+	const copyToClipboard = (url) => {
+		console.log("copy url", url);
+		navigator.clipboard.writeText(url);
+	}
+
 	return (
 		<div>
 			{displayModal && (
@@ -122,13 +127,22 @@ export const PostTable = ({ posts }) => {
 							<td className='px-4 py-2 border'>{post.createdDate}</td>
 							<td className='px-4 py-2 border'>{post.categoryNames}</td>
 							<td className='px-4 py-2 border'>
-								<a
-									className='text-blue-600 visited:text-blue-800 hover:text-blue-300'
-									href={post.link}
-									target='_blank'
-									rel='noopener noreferrer'>
-									{post.title}
-								</a>
+								<div className='flex justify-between'>
+									<a
+										className='text-blue-600 visited:text-blue-800 hover:text-blue-300'
+										href={post.link}
+										target='_blank'
+										rel='noopener noreferrer'>
+										{post.title}
+									</a>
+									<button type="button"
+										onClick={() => copyToClipboard(post.link)}
+										className='focus:outline-none'>
+										<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+											<path d="M23.783 25.851v-17.501h-2.149v3.275h-10.951v-3.275h-2.149v17.501h15.249zM16.158 6.201c-0.614 0-1.075 0.461-1.075 1.075s0.461 1.075 1.075 1.075c0.614 0 1.075-0.461 1.075-1.075s-0.461-1.075-1.075-1.075v0zM23.783 6.201c1.177 0 2.201 0.973 2.201 2.149v17.501c0 1.177-1.023 2.149-2.201 2.149h-15.249c-1.177 0-2.201-0.973-2.201-2.149v-17.501c0-1.177 1.023-2.149 2.201-2.149h4.555c0.461-1.28 1.637-2.201 3.070-2.201s2.61 0.921 3.070 2.201h4.554z"></path>
+										</svg>
+									</button>
+								</div>
 							</td>
 							<td className='px-4 py-2 border'>{post.numberOfWords}</td>
 							<td className='px-4 py-2 text-center border'>
