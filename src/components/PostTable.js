@@ -3,7 +3,7 @@ import axios from 'axios';
 import { SortableHeader } from './SortableHeader';
 import { SearchContext } from './../App';
 import { Modal } from './Modal';
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer, toast, Zoom } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 export const PostTable = ({ posts, headers }) => {
@@ -65,13 +65,14 @@ export const PostTable = ({ posts, headers }) => {
 		console.log("copy url", url);
 		navigator.clipboard.writeText(url);
 		toast.success(`Copied to clipboard: ${url}`, {
-			position: "top-right",
+			position: "top-center",
 			autoClose: 3000,
 			hideProgressBar: true,
 			closeOnClick: true,
 			pauseOnHover: true,
 			draggable: true,
 			progress: undefined,
+			theme: "colored"
 		});
 	}
 
@@ -137,7 +138,7 @@ export const PostTable = ({ posts, headers }) => {
 
 	return (
 		<div>
-			<ToastContainer />
+			<ToastContainer transition={Zoom} style={{ width: "900px" }}/>
 			{displayModal && (
 				<div className='bg-gray-900 h-screen opacity-75 fixed top-0 bottom-0 left-0 right-0'></div>
 			)}
