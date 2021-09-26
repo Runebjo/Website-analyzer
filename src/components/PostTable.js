@@ -15,6 +15,7 @@ export const PostTable = ({ posts, headers }) => {
 	const [displayModal, setDisplayModal] = useState(false);
 	const [outline, setOutline] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
+	const [numOfSerps, setNumOfSerps] = useState(0);
 	const searchContext = useContext(SearchContext);
 	const APIKEY = '71781d1a14888d20d75832cf627b387d83c19cd798a089db7755d72b2cca5295';
 	const searchUrl = `https://serpapi.com/search.json?engine=google&q=site:${headers.baseAddress}&api_key=${APIKEY}`;
@@ -66,22 +67,45 @@ export const PostTable = ({ posts, headers }) => {
 	const checkForIndex = async () => {
 		setIsLoading(true);
 		let serpUrls = [];
-		const response = await axios.get(searchUrl);
-		const {organic_results, serpapi_pagination} = response.data;
+		let hasNext = true;
 
+		let response;
+
+		try {
+			response = await axios.get(searchUrl);	
+		} catch (error) {
+			console.log("error", error)
+			setDisplayIndexStatus(true);
+			setIsLoading(false);
+		}
+
+		const {organic_results} = response.data;
+		let serpPagination = response.data.serpapi_pagination;
 		serpUrls = collectUrls(organic_results);
 
-		for (const key in serpapi_pagination.other_pages) {
-			const url = `${serpapi_pagination.other_pages[key]}&api_key=${APIKEY}`;
-			const response = await axios.get(url);
-			const {organic_results} = response.data;
-			let paginatedSerpUrls = collectUrls(organic_results);
-			serpUrls = [...serpUrls, ...paginatedSerpUrls];
+		while (hasNext) {
+			let serpPaginationNext = serpPagination.next;
+			if (serpPaginationNext) {
+				const url = `${serpPaginationNext}&api_key=${APIKEY}`;
+				try {
+					response = await axios.get(url);	
+					const {organic_results} = response.data;
+					serpPagination = response.data.serpapi_pagination;
+					let paginatedSerpUrls = collectUrls(organic_results);
+					serpUrls = [...serpUrls, ...paginatedSerpUrls];
+					setNumOfSerps(serpUrls.length);
+				} catch (error) {
+					console.log("error", error)
+					hasNext = false;
+				}
+			}
+			else {
+				hasNext = false;
+			}
 		}
 
 		setIndexedFields(serpUrls);
 		setDisplayIndexStatus(true);
-
 		setIsLoading(false);
 	}
 
@@ -132,6 +156,7 @@ export const PostTable = ({ posts, headers }) => {
 					<span className='ml-4'>Number of Posts: {filteredPosts.length}</span>
 					{ displayIndexStatus && <span className='ml-4 text-green-500'>Indexed: {filteredPosts.filter(f => !f.isIndexed).length}</span>}
 					{ displayIndexStatus && <span className='ml-4 text-red-500'>Not Indexed: {filteredPosts.filter(f => f.isIndexed).length}</span>}
+					{ numOfSerps > 0 && <span className='ml-4'> Number of serps: {numOfSerps}</span> }
 				</div>
 				<div className="flex">
 					<button
