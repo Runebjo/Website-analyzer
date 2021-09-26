@@ -3,6 +3,8 @@ import axios from 'axios';
 import { SortableHeader } from './SortableHeader';
 import { SearchContext } from './../App';
 import { Modal } from './Modal';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export const PostTable = ({ posts, headers }) => {
 	const [orderedPosts, setOrderedPosts] = useState([]);
@@ -62,6 +64,15 @@ export const PostTable = ({ posts, headers }) => {
 	const copyToClipboard = (url) => {
 		console.log("copy url", url);
 		navigator.clipboard.writeText(url);
+		toast.success(`Copied to clipboard: ${url}`, {
+			position: "top-right",
+			autoClose: 3000,
+			hideProgressBar: true,
+			closeOnClick: true,
+			pauseOnHover: true,
+			draggable: true,
+			progress: undefined,
+		});
 	}
 
 	const checkForIndex = async () => {
@@ -72,14 +83,14 @@ export const PostTable = ({ posts, headers }) => {
 		let response;
 
 		try {
-			response = await axios.get(searchUrl);	
+			response = await axios.get(searchUrl);
 		} catch (error) {
 			console.log("error", error)
 			setDisplayIndexStatus(true);
 			setIsLoading(false);
 		}
 
-		const {organic_results} = response.data;
+		const { organic_results } = response.data;
 		let serpPagination = response.data.serpapi_pagination;
 		serpUrls = collectUrls(organic_results);
 
@@ -88,8 +99,8 @@ export const PostTable = ({ posts, headers }) => {
 			if (serpPaginationNext) {
 				const url = `${serpPaginationNext}&api_key=${APIKEY}`;
 				try {
-					response = await axios.get(url);	
-					const {organic_results} = response.data;
+					response = await axios.get(url);
+					const { organic_results } = response.data;
 					serpPagination = response.data.serpapi_pagination;
 					let paginatedSerpUrls = collectUrls(organic_results);
 					serpUrls = [...serpUrls, ...paginatedSerpUrls];
@@ -110,7 +121,7 @@ export const PostTable = ({ posts, headers }) => {
 	}
 
 
-	const collectUrls = (organic_results) => {		
+	const collectUrls = (organic_results) => {
 		const serpLinks = organic_results.map(result => result.link);
 		return serpLinks;
 	}
@@ -126,6 +137,7 @@ export const PostTable = ({ posts, headers }) => {
 
 	return (
 		<div>
+			<ToastContainer />
 			{displayModal && (
 				<div className='bg-gray-900 h-screen opacity-75 fixed top-0 bottom-0 left-0 right-0'></div>
 			)}
@@ -154,9 +166,9 @@ export const PostTable = ({ posts, headers }) => {
 						Reset
 					</button>
 					<span className='ml-4'>Number of Posts: {filteredPosts.length}</span>
-					{ displayIndexStatus && <span className='ml-4 text-green-500'>Indexed: {filteredPosts.filter(f => !f.isIndexed).length}</span>}
-					{ displayIndexStatus && <span className='ml-4 text-red-500'>Not Indexed: {filteredPosts.filter(f => f.isIndexed).length}</span>}
-					{ numOfSerps > 0 && <span className='ml-4'> Number of serps: {numOfSerps}</span> }
+					{displayIndexStatus && <span className='ml-4 text-green-500'>Indexed: {filteredPosts.filter(f => !f.isIndexed).length}</span>}
+					{displayIndexStatus && <span className='ml-4 text-red-500'>Not Indexed: {filteredPosts.filter(f => f.isIndexed).length}</span>}
+					{numOfSerps > 0 && <span className='ml-4'> Number of serps: {numOfSerps}</span>}
 				</div>
 				<div className="flex">
 					<button
@@ -166,7 +178,7 @@ export const PostTable = ({ posts, headers }) => {
 						}>
 						Check index
 					</button>
-					{ isLoading && <div className='w-8 h-8 ease-linear border-8 border-t-8 border-gray-200 rounded-full loader inline-block ml-4'></div>}
+					{isLoading && <div className='w-8 h-8 ease-linear border-8 border-t-8 border-gray-200 rounded-full loader inline-block ml-4'></div>}
 				</div>
 			</div>
 			<table className='w-full mt-4 table-fixed'>
@@ -199,7 +211,7 @@ export const PostTable = ({ posts, headers }) => {
 							setCurrentSort={setCurrentSort}>
 							Words
 						</SortableHeader>
-						{ displayIndexStatus && <SortableHeader
+						{displayIndexStatus && <SortableHeader
 							fieldname='isIndexed'
 							currentSort={currentSort}
 							setCurrentSort={setCurrentSort}>
