@@ -5,7 +5,8 @@ import { Stats } from './components/Stats';
 import { Overview } from './components/Overview';
 import { Categories } from './components/Categories';
 import { Authors } from './components/Authors';
-import { countWords, decodeHtml, getOutline } from './utils/ContentScraper';
+import { Links } from './components/Links';
+import { countWords, decodeHtml, getLinkData, getOutline } from './utils/ContentScraper';
 import { reducer } from './Reducer';
 import { DispatchTypes } from './utils/DispatchTypes';
 
@@ -15,6 +16,7 @@ function App() {
 	const [posts, setPosts] = useState([]);
 	const [categories, setCategories] = useState([]);
 	const [authors, setAuthors] = useState([]);
+	const [links, setLinks] = useState([]);
 	const [headers, setHeaders] = useState({});
 	const [urlInput, setUrlInput] = useState('');
 	const [url, setUrl] = useState('');
@@ -78,6 +80,17 @@ function App() {
 		return authorsWithNumberOfPosts;
 	}
 
+	function getLinkOverview(posts) {
+		const links = posts.filter(post => post.linkData.length > 0).map(post => {
+			return {
+				postTitle: post.title,
+				linkData: post.linkData,
+				tags: [...new Set(post.linkData.map(ld => ld.tag))]
+			}
+		});
+		return links;
+	}
+
 	useEffect(() => {
 		async function getHeaderData() {
 			const response = await axios.get(url);
@@ -135,6 +148,7 @@ function App() {
 							numberOfWords: countWords(p.content.rendered),
 							outline: getOutline(p.content.rendered),
 							link: p.link,
+							linkData: getLinkData(p.content.rendered),
 							categories: p.categories,
 							author: p.author,
 							categoryNames: p.categories
@@ -153,9 +167,11 @@ function App() {
 					authors,
 					processedPost
 				)
+				const linksProcessed = getLinkOverview(processedPost);
 				setPosts(processedPost);
 				setCategories(categoriesProcessed);
 				setAuthors(authorsProcessed);
+				setLinks(linksProcessed);
 			} catch (error) {
 				console.log('error', error);
 				setIsHttpError(true);
@@ -214,6 +230,7 @@ function App() {
 								<div className='flex'>
 									<div>
 										<Overview posts={posts} headers={headers} authors={authors} viewPosts={viewPosts} />
+										<Links links={links} />
 										<Authors authors={authors} viewPosts={viewPosts} />
 									</div>
 									<Categories categories={categories} viewPosts={viewPosts} />
