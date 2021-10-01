@@ -138,7 +138,7 @@ export const PostTable = ({ posts, headers }) => {
 
 	return (
 		<div>
-			<ToastContainer transition={Zoom} style={{ width: "900px" }}/>
+			<ToastContainer transition={Zoom} style={{ width: "900px" }} />
 			{displayModal && (
 				<div className='bg-gray-900 h-screen opacity-75 fixed top-0 bottom-0 left-0 right-0'></div>
 			)}
@@ -276,7 +276,21 @@ export const PostTable = ({ posts, headers }) => {
 					))}
 				</tbody>
 			</table>
-			{displayModal && <Modal outline={outline} closeModal={closeModal} />}
+			{displayModal && <Modal outline={outline} closeModal={closeModal}>
+				<div className='m-4'>
+					<h1 className='text-xl underline'>Outline</h1>
+				</div>
+				<div className='m-4'>
+					<ul>
+						{outline.map(o => {
+							if (o.startsWith("H3")) {
+								return <li className='pt-1 pb-1 ml-4 text-sm'>{o}</li>;
+							}
+							return <li className='pt-1 pb-1 font-bold'>{o}</li>;
+						})}
+					</ul>
+				</div>
+			</Modal>}
 		</div>
 	);
 };
