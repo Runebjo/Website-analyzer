@@ -3,7 +3,7 @@ import React from 'react';
 export const Modal = ({ closeModal, children }) => {
 	return (
 		<div className='fixed top-0 bottom-0 left-0 right-0 flex flex-col items-center justify-center w-full h-screen font-sans bg-teal-lightest'>
-			<div className='absolute flex items-center justify-center w-full h-screen bg-modal'>
+			<div className='overflow-y-auto absolute flex items-center justify-center bg-white h-screen bg-modal'>
 				<div className='max-w-xl max-h-full p-2 m-4 text-left bg-white rounded shadow'>
 					<svg
 						className='float-right text-black cursor-pointer fill-current'
