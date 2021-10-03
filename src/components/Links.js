@@ -7,13 +7,13 @@ export const Links = ({ links }) => {
 
     useEffect(() => {
         console.log("links", links);
-        setFilteredList(links);
+        setFilteredList(JSON.parse(JSON.stringify(links)));
     }, [links])
 
     let numOfAmazonLinks = 0;
     let tags = [];
     if (links && links.length > 0) {
-        
+
         numOfAmazonLinks = links.reduce((acc, a) => {
             return acc + a.linkData.length;
         }, 0);
@@ -27,12 +27,13 @@ export const Links = ({ links }) => {
     }
 
     function filterList(tag) {
-        let filt = links.map(link => {
+        let tempLinks = JSON.parse(JSON.stringify(links));
+        let filt = tempLinks.map(link => {
             link.linkData = link.linkData.filter(ld => ld.link.indexOf(`${tag}`) > 0);
-            console.log("amz", link.linkData);
             return link;
         }).filter(link => link.linkData.length > 0);
         console.log(`filt`, filt);
+        console.log(`links`, links);
         setFilteredList(filt);
     }
 
@@ -61,11 +62,18 @@ export const Links = ({ links }) => {
                     </tr>
                 </tbody>
             </table>
-            {displayModal && <Modal closeModal={closeModal}>
-                <div className='m-4'>
-                    {tags.map(tag => {
-                        return <p onClick={() => filterList(tag)}>{tag}</p>
-                    })}
+            {displayModal && <Modal closeModal={closeModal} isHeight={true}>
+                <div className="flex justify-between">
+                    <div className='m-4'>
+                        {tags.map((tag, index) => {
+                            return <p key={index} onClick={() => filterList(tag)}>{tag}</p>
+                        })}
+                    </div>
+                    <div className="m-4">
+                        <button className='px-4 py-1 ml-1 border rounded-lg focus:outline-none focus:shadow-outline'>
+                            Reset
+                        </button>
+                    </div>
                 </div>
                 {filteredList.map((link, index) => {
                     return (
@@ -75,10 +83,11 @@ export const Links = ({ links }) => {
                             </div>
                             <div className='m-4'>
                                 <ul>
-                                    {link.linkData.map(o => {
-                                        return <li className='text-xs overflow-hidden whitespace-no-wrap'>{o.link}</li>;
+                                    {link.linkData.map((o, index) => {
+                                        return <li key={index} className='text-xs overflow-hidden whitespace-no-wrap'>{o.link}</li>;
                                     })}
                                 </ul>
+
                             </div>
                         </div>)
                 })}
