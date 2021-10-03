@@ -93,7 +93,7 @@ function App() {
 
 	useEffect(() => {
 		async function getHeaderData() {
-			const response = await axios.get(url);
+			const response = await axios.get(`${url}&cb=${Date.now()}`);
 			const headers = {
 				totalPages: response.headers['x-wp-totalpages'],
 				totalPosts: response.headers['x-wp-total'],
@@ -107,7 +107,7 @@ function App() {
 		async function getAllPosts(totalPages) {
 			const posts = [];
 			for (let page = 1; page <= totalPages; page++) {
-				const post = axios.get(`${url}&page=${page}`);
+				const post = axios.get(`${url}&page=${page}&cb=${Date.now()}`);
 				posts.push(post);
 			}
 			const allPosts = await axios.all(posts);

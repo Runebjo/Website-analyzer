@@ -114,7 +114,7 @@ export const Links = ({ links }) => {
                             <div className='m-4'>
                                 <ul>
                                     {link.linkData.map((o, index) => {
-                                        return <li key={index} className='text-xs overflow-hidden whitespace-no-wrap'>{o.link}</li>;
+                                        return <li title={o.link} key={index} className='text-xs overflow-hidden whitespace-no-wrap'>{o.link}</li>;
                                     })}
                                 </ul>
 
