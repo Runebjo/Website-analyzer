@@ -4,37 +4,63 @@ import { Modal } from './Modal';
 export const Links = ({ links }) => {
     const [displayModal, setDisplayModal] = useState(false);
     const [filteredList, setFilteredList] = useState([]);
+    const [tags, setTags] = useState([]);
+    const [numOfAmazonLinks, setNumOfAmazonLinks] = useState(0);
 
     useEffect(() => {
-        console.log("links", links);
-        setFilteredList(JSON.parse(JSON.stringify(links)));
+        resetFilterList();
+        
+        if (links && links.length > 0) {
+            let numOfAmazonLinks = links.reduce((acc, a) => {
+                return acc + a.linkData.length;
+            }, 0);
+
+            setNumOfAmazonLinks(numOfAmazonLinks);
+
+            const tagNames = links.map(link => link.tags).reduce((a, b) => a.concat(b), []);
+            const uniqueTagNames = [...new Set(tagNames)];
+
+            getNumLinksFromTags(uniqueTagNames);
+        }
     }, [links])
 
-    let numOfAmazonLinks = 0;
-    let tags = [];
-    if (links && links.length > 0) {
+    function resetFilterList() {
+        setFilteredList(JSON.parse(JSON.stringify(links)));
+        const newTag = tags.map(t => {
+           return {...t, selected: false};
+        });
+        setTags(newTag);
+    }
 
-        numOfAmazonLinks = links.reduce((acc, a) => {
-            return acc + a.linkData.length;
-        }, 0);
+    function getNumLinksFromTags(uniqueTagNames) {
+        const newTags = uniqueTagNames.map((tag, index) => {
+            let numOfLinks = links.map(link => {
+                return link.linkData.filter(ld => ld.link.indexOf(`${tag}`) > 0).length;
+            }).reduce((a,b) => a+b);
+            return {tag, numOfLinks, index, selected: false};
+        });
 
-        tags = links.map(link => link.tags).reduce((a, b) => a.concat(b), []);
-        tags = [...new Set(tags)];
+        setTags(newTags);
     }
 
     function closeModal() {
         setDisplayModal(false);
     }
 
-    function filterList(tag) {
+    function filterList(tag = {}) {
         let tempLinks = JSON.parse(JSON.stringify(links));
         let filt = tempLinks.map(link => {
-            link.linkData = link.linkData.filter(ld => ld.link.indexOf(`${tag}`) > 0);
+            if (tag) link.linkData = link.linkData.filter(ld => ld.link.indexOf(`${tag.tag}`) > 0);
             return link;
         }).filter(link => link.linkData.length > 0);
-        console.log(`filt`, filt);
-        console.log(`links`, links);
+
+        const newTags = tags.map(t => {
+            let selected = t.tag === tag.tag ? true : false;
+            return { ...t, selected };
+        })
+
         setFilteredList(filt);
+        setTags(newTags);
     }
 
     return (
@@ -58,19 +84,23 @@ export const Links = ({ links }) => {
                     </tr>
                     <tr>
                         <td className='px-4 py-2 border'>Amazon Links</td>
-                        <td className='px-4 py-2 border' onClick={() => setDisplayModal(true)}>{numOfAmazonLinks}</td>
+                        <td className='px-4 py-2 border text-blue-600 cursor-pointer visited:text-blue-800 hover:text-blue-300 focus:outline-none' onClick={() => setDisplayModal(true)}>{numOfAmazonLinks}</td>
                     </tr>
                 </tbody>
             </table>
             {displayModal && <Modal closeModal={closeModal} isHeight={true}>
                 <div className="flex justify-between">
                     <div className='m-4'>
-                        {tags.map((tag, index) => {
-                            return <p key={index} onClick={() => filterList(tag)}>{tag}</p>
+                        {tags.map((tag) => {
+                            return <p key={tag.index}
+                                className='text-blue-600 cursor-pointer visited:text-blue-800 hover:text-blue-300 focus:outline-none p-2 mb-2'
+                                style={tag.selected ? { border: '1px solid black' } : null}
+                                onClick={() => filterList(tag)}>{tag.tag} - {tag.numOfLinks}</p>
                         })}
                     </div>
                     <div className="m-4">
-                        <button className='px-4 py-1 ml-1 border rounded-lg focus:outline-none focus:shadow-outline'>
+                        <button className='px-4 py-1 ml-1 border rounded-lg focus:outline-none focus:shadow-outline'
+                            onClick={() => resetFilterList()}>
                             Reset
                         </button>
                     </div>
