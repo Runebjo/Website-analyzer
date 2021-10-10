@@ -108,8 +108,8 @@ function App() {
 		}
 		async function getAllPosts(totalPages) {
 			const posts = [];
-			const currentUrl = disableCache ? `${url}&cb=${Date.now()}` : url;
 			for (let page = 1; page <= totalPages; page++) {
+				const currentUrl = disableCache ? `${url}&page=${page}&cb=${Date.now()}` : `${url}&page=${page}`;
 				const post = axios.get(currentUrl);
 				posts.push(post);
 			}
