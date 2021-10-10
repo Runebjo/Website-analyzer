@@ -154,7 +154,7 @@ function App() {
 							categoryNames: p.categories
 								.map(categoryId => {
 									const category = categories.find(c => c.id === categoryId);
-									return category.name;
+									return category?.name || '';
 								})
 								.join(' | '),
 						};
