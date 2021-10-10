@@ -35,6 +35,7 @@ export const Links = ({ links }) => {
     function getNumLinksFromTags(uniqueTagNames) {
         const newTags = uniqueTagNames.map((tag, index) => {
             let numOfLinks = links.map(link => {
+                if (tag === 'NO_TAG') return link.linkData.filter(ld => ld.link.indexOf(`tag=`) > 0).length;
                 return link.linkData.filter(ld => ld.link.indexOf(`${tag}`) > 0).length;
             }).reduce((a,b) => a+b);
             return {tag, numOfLinks, index, selected: false};
@@ -50,7 +51,14 @@ export const Links = ({ links }) => {
     function filterList(tag = {}) {
         let tempLinks = JSON.parse(JSON.stringify(links));
         let filt = tempLinks.map(link => {
-            if (tag) link.linkData = link.linkData.filter(ld => ld.link.indexOf(`${tag.tag}`) > 0);
+            if (tag) {
+                if (tag.tag === 'NO_TAG') {
+                    link.linkData = link.linkData.filter(ld => ld.link.indexOf('tag=') === -1);
+                }
+                else {
+                    link.linkData = link.linkData.filter(ld => ld.link.indexOf(`${tag.tag}`) > 0);
+                }
+            } 
             return link;
         }).filter(link => link.linkData.length > 0);
 

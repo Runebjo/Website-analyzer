@@ -38,6 +38,9 @@ export function getLinkData(content) {
                 const indexEnd = tag.indexOf('&');
                 tag = tag.substr(0, indexEnd);
             }
+            else {
+                tag = 'NO_TAG';
+            }
 
             return {
                 link: al,
