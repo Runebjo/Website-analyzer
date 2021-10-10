@@ -26,6 +26,7 @@ function App() {
 	const [overviewIsActive, setOverviewIsActive] = useState(true);
 	const [searchValue, dispatch] = useReducer(reducer, '');
 	const [cors, setCors] = useState(false);
+	const [disableCache, setDisableCache] = useState(false);
 
 	function submitUrl(e) {
 		e.preventDefault();
@@ -93,7 +94,8 @@ function App() {
 
 	useEffect(() => {
 		async function getHeaderData() {
-			const response = await axios.get(`${url}&cb=${Date.now()}`);
+			const currentUrl = disableCache ? `${url}&cb=${Date.now()}` : url;
+			const response = await axios.get(currentUrl);
 			const headers = {
 				totalPages: response.headers['x-wp-totalpages'],
 				totalPosts: response.headers['x-wp-total'],
@@ -106,8 +108,9 @@ function App() {
 		}
 		async function getAllPosts(totalPages) {
 			const posts = [];
+			const currentUrl = disableCache ? `${url}&cb=${Date.now()}` : url;
 			for (let page = 1; page <= totalPages; page++) {
-				const post = axios.get(`${url}&page=${page}&cb=${Date.now()}`);
+				const post = axios.get(currentUrl);
 				posts.push(post);
 			}
 			const allPosts = await axios.all(posts);
@@ -208,6 +211,7 @@ function App() {
 					</button>
 				</form>
 				<input type="checkbox" onChange={() => setCors(!cors)}></input><span className="ml-2">Use cors</span>
+				<input className="ml-4" type="checkbox" onChange={() => setDisableCache(!disableCache)}></input><span className="ml-2">Disable cache</span>
 				{isHttpError && <h3>Error getting data from website</h3>}
 				{!isLoadingHeaders && !isHttpError && posts.length > 0 ? (
 					<>
